@@ -87,6 +87,17 @@ header p {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
+
+/* 🔽 太太及兒子未選中嘅書 — 淺灰色 */
+.book-card.not-interested {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+}
+.book-card.not-interested:hover {
+  opacity: 0.7;
+  filter: grayscale(0.3);
+  transform: translateY(-1px);
+}
 .book-cover {
   width: 80px;
   height: 120px;
@@ -285,7 +296,7 @@ footer {
         <div class="hkpl-detail">Not found in HKPL catalog. Dustin Brady only has Leila & Nugget mystery audiobooks</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/id/10472357-L.jpg" alt="The Inheritance Games" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
@@ -303,7 +314,7 @@ footer {
         <div class="hkpl-detail">English edition: 目前沒有項目在館內架上可供外借 (4 reservations). Chinese edition exists but status unclear</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/id/10703547-L.jpg" alt="The Hawthorne Legacy" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
@@ -357,7 +368,7 @@ footer {
         <div class="hkpl-detail">目前沒有項目在館內架上可供外借 (1 reservation)</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/isbn/9781803706511-L.jpg" alt="Grandpa Frank's Great Big Bucket List" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
@@ -375,7 +386,7 @@ footer {
         <div class="hkpl-detail">1 record: 2022 Usborne edition, 6 copies across multiple libraries</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/id/8166186-L.jpg" alt="Incredible Space Raiders from Space!" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
@@ -447,7 +458,7 @@ footer {
         <div class="hkpl-detail">Chinese edition only: 開著校車去流浪, 15 copies available. English edition not found</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/id/6424934-L.jpg" alt="A Wrinkle in Time" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
@@ -483,7 +494,7 @@ footer {
         <div class="hkpl-detail">Not found in HKPL catalog (same as above - author not in system for these titles)</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/id/8797702-L.jpg" alt="The Unteachables" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
@@ -555,7 +566,7 @@ footer {
         <div class="hkpl-detail">5 records: 3 English editions (5+5+5 copies), 1 Chinese edition. Plus Pax Journey Home (5 copies)</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/id/8352502-L.jpg" alt="The Giver" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
@@ -627,7 +638,7 @@ footer {
         <div class="hkpl-detail">1 record: 2018 Nosy Crow edition, 9 copies across multiple libraries</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/id/9265168-L.jpg" alt="The Landry News" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
@@ -645,7 +656,7 @@ footer {
         <div class="hkpl-detail">3 editions found, 1+7+15 copies available across multiple libraries</div>
       </div>
     </div>
-    <div class="book-card">
+    <div class="book-card not-interested">
       <img class="book-cover" src="https://covers.openlibrary.org/b/id/8401617-L.jpg" alt="Hatchet" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
