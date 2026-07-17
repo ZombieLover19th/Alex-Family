@@ -201,6 +201,25 @@ footer {
   .book-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
 }
 </style>
+.book-publisher { font-size: 0.82rem; color: #888; margin-top: -4px; }
+.book-summary-zh { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
+.book-summary-en { font-size: 0.82rem; color: #999; line-height: 1.5; font-style: italic; }
+/* Lightbox */
+.lightbox {
+  display: none; position: fixed; z-index: 9999; top: 0; left: 0;
+  width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+  justify-content: center; align-items: center; cursor: pointer;
+  animation: fadeIn 0.2s;
+}
+.lightbox.show { display: flex; }
+.lightbox img {
+  max-width: 90vw; max-height: 90vh; border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); animation: zoomIn 0.2s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.book-cover { cursor: pointer; }
+
 </head>
 <body>
 <header>
@@ -230,12 +249,14 @@ footer {
           <span class="book-title">1. The Dead Sea Squirrels</span>
           <span class="book-author">— Mike Nawrocki</span>
         </div>
+        <div class="book-publisher">🏢 Tyndale Kids / 天道出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 520L</span>
           <span class="meta-tag tag-pages">📄 128頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">這是一系列有趣的初階章節書，講述兩隻在死海洞穴中被發現的松鼠木乃伊，竟然奇蹟般地復活了。他們與一個現代男孩成為朋友，一起展開各種搞笑又充滿冒險的故事，在歡笑中傳遞關於信仰和友誼的訊息。</div>
+        <div class="book-summary-zh">📖 這是一系列有趣的初階章節書，講述兩隻在死海洞穴中被發現的松鼠木乃伊，竟然奇蹟般地復活了。他們與一個現代男孩成為朋友，一起展開各種搞笑又充滿冒險的故事，在歡笑中傳遞關於信仰和友誼的訊息。</div>
+        <div class="book-summary-en">📖 A hilarious early chapter book series about two squirrel mummies discovered in Dead Sea caves who miraculously come back to life. They befriend a modern-day boy, embarking on wild adventures while sharing messages about faith and friendship.</div>
         <div class="hkpl-detail">Not found in HKPL catalog. Mike Nawrocki only has 'Nighty night and good night' (co-author)</div>
       </div>
     </div>
@@ -246,12 +267,14 @@ footer {
           <span class="book-title">2. The One and Only Ivan</span>
           <span class="book-author">— Katherine Applegate</span>
         </div>
+        <div class="book-publisher">🏢 HarperCollins / 哈珀柯林斯</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 570L</span>
           <span class="meta-tag tag-pages">📄 336頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (30本)</span>
         </div>
-        <div class="book-summary">伊凡是一隻在購物中心籠子裡生活了二十七年的大猩猩，他習慣了人類的觀看，幾乎忘記了叢林的生活。當一隻名叫露比的小象來到他身邊後，伊凡開始重新思考自己的生活，並許下承諾要幫助露比逃離牢籠，找到真正屬於他們的家。</div>
+        <div class="book-summary-zh">📖 伊凡是一隻在購物中心籠子裡生活了二十七年的大猩猩，他習慣了人類的觀看，幾乎忘記了叢林的生活。當一隻名叫露比的小象來到他身邊後，伊凡開始重新思考自己的生活，並許下承諾要幫助露比逃離牢籠，找到真正屬於他們的家。</div>
+        <div class="book-summary-en">📖 Ivan is a gorilla who has lived in a shopping mall cage for 27 years, accustomed to human stares and almost forgetting jungle life. When a baby elephant named Ruby arrives, Ivan begins to rethink his life and makes a promise to help Ruby escape captivity and find a true home.</div>
         <div class="hkpl-detail">Print books unavailable (41-92 reservations). Audiobook available: 30 copies. Chinese edition also available</div>
       </div>
     </div>
@@ -262,12 +285,14 @@ footer {
           <span class="book-title">3. Trapped in a Video Game</span>
           <span class="book-author">— Dustin Brady</span>
         </div>
+        <div class="book-publisher">🏢 Andrews McMeel Publishing / 安德魯斯·麥克米爾</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 600L</span>
           <span class="meta-tag tag-pages">📄 160頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">傑西的好友艾瑞克是一位電玩天才，他發明了一種方法可以讓人真正進入電玩遊戲中。然而當他們被困在遊戲裡時，才發現這不是普通的遊戲——每一次失誤都可能意味著永遠無法回到現實世界。他們必須依靠智慧和勇氣通關才能逃脫。</div>
+        <div class="book-summary-zh">📖 傑西的好友艾瑞克是一位電玩天才，他發明了一種方法可以讓人真正進入電玩遊戲中。然而當他們被困在遊戲裡時，才發現這不是普通的遊戲——每一次失誤都可能意味著永遠無法回到現實世界。他們必須依靠智慧和勇氣通關才能逃脫。</div>
+        <div class="book-summary-en">📖 Jesse's best friend Eric is a gaming genius who invented a way to physically enter video games. But when they get trapped inside, they discover this is no ordinary game — every mistake could mean never returning to the real world. They must rely on wits and courage to beat every level and escape.</div>
         <div class="hkpl-detail">Not found in HKPL catalog. Dustin Brady only has Leila & Nugget mystery audiobooks</div>
       </div>
     </div>
@@ -278,12 +303,14 @@ footer {
           <span class="book-title">4. The Inheritance Games</span>
           <span class="book-author">— Jennifer Lynn Barnes</span>
         </div>
+        <div class="book-publisher">🏢 Little, Brown Books for Young Readers / 小布朗出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 640L</span>
           <span class="meta-tag tag-pages">📄 386頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">高中生Avery Grambs本來的計劃只是活過高中、贏得獎學金、然後離開。但當億萬富翁Tobias Hawthorne去世後將幾乎全部遺產留給她時，她的命運瞬間改變——問題是，Avery根本不認識他，也不知道為什麼會被選中。她必須住進Hawthorne大宅，與這位億萬富翁的四個孫子一起解開層層謎題。</div>
+        <div class="book-summary-zh">📖 高中生Avery Grambs本來的計劃只是活過高中、贏得獎學金、然後離開。但當億萬富翁Tobias Hawthorne去世後將幾乎全部遺產留給她時，她的命運瞬間改變——問題是，Avery根本不認識他，也不知道為什麼會被選中。她必須住進Hawthorne大宅，與這位億萬富翁的四個孫子一起解開層層謎題。</div>
+        <div class="book-summary-en">📖 High schooler Avery Grambs just wanted to survive school, win a scholarship, and leave. But when billionaire Tobias Hawthorne dies and leaves her almost his entire fortune, her life changes overnight — except Avery has no idea who he is or why he chose her. She must move into Hawthorne House and solve layers of puzzles alongside his four grandsons.</div>
         <div class="hkpl-detail">English edition: 目前沒有項目在館內架上可供外借 (4 reservations). Chinese edition exists but status unclear</div>
       </div>
     </div>
@@ -294,12 +321,14 @@ footer {
           <span class="book-title">5. The Hawthorne Legacy</span>
           <span class="book-author">— Jennifer Lynn Barnes</span>
         </div>
+        <div class="book-publisher">🏢 Little, Brown Books for Young Readers / 小布朗出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 650L</span>
           <span class="meta-tag tag-pages">📄 358頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">繼承人Avery Grambs必須收拾殘局，尋找那個可能知道所有答案的男人——包括為什麼Tobias Hawthorne會把財產留給她。陰謀、財富和浪漫在這部暢銷書的續集中交織，Avery在Hawthorne兄弟的陪伴下繼續揭開更多家族秘密。</div>
+        <div class="book-summary-zh">📖 繼承人Avery Grambs必須收拾殘局，尋找那個可能知道所有答案的男人——包括為什麼Tobias Hawthorne會把財產留給她。陰謀、財富和浪漫在這部暢銷書的續集中交織，Avery在Hawthorne兄弟的陪伴下繼續揭開更多家族秘密。</div>
+        <div class="book-summary-en">📖 Heiress Avery Grambs must pick up the pieces and find the man who might hold all the answers — including why Tobias Hawthorne left her his fortune. Intrigue, wealth, and romance intertwine as Avery continues uncovering family secrets with the Hawthorne brothers.</div>
         <div class="hkpl-detail">目前沒有項目在館內架上可供外借 (1 reservation)</div>
       </div>
     </div>
@@ -310,12 +339,14 @@ footer {
           <span class="book-title">6. Bird Boy</span>
           <span class="book-author">— Catherine Bruton</span>
         </div>
+        <div class="book-publisher">🏢 Nosy Crow / 諾西克羅出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 660L</span>
           <span class="meta-tag tag-pages">📄 304頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (2本)</span>
         </div>
-        <div class="book-summary">小男孩Will失去母親後，被送到英格蘭北部與素未謀面的祖父同住。在陌生的環境中，他發現了觀鳥的樂趣，透過與大自然的連結和一段新的友誼，慢慢走出喪親之痛，找到屬於自己的力量。</div>
+        <div class="book-summary-zh">📖 小男孩Will失去母親後，被送到英格蘭北部與素未謀面的祖父同住。在陌生的環境中，他發現了觀鳥的樂趣，透過與大自然的連結和一段新的友誼，慢慢走出喪親之痛，找到屬於自己的力量。</div>
+        <div class="book-summary-en">📖 After losing his mother, young Will is sent to live with an uncle he's never met in the mountains of northern England. In this unfamiliar world, he discovers the joy of birdwatching, and through his connection with nature and a new friendship, he slowly heals from grief and finds his own inner strength.</div>
         <div class="hkpl-detail">1 record: 2024 Nosy Crow edition, 2 copies (香港中央圖書館 + 屯門公共圖書館)</div>
       </div>
     </div>
@@ -326,12 +357,14 @@ footer {
           <span class="book-title">7. The Final Gambit</span>
           <span class="book-author">— Jennifer Lynn Barnes</span>
         </div>
+        <div class="book-publisher">🏢 Little, Brown Books for Young Readers / 小布朗出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 660L</span>
           <span class="meta-tag tag-pages">📄 400頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">要繼承數十億美元，Avery Kylie Grambs只需在Hawthorne大宅再撐過幾週。狗仔隊緊追不捨，財務壓力步步進逼，危險無處不在。當一個神秘的新訪客出現，Avery必須在這場最終對決中做出決定性的選擇。</div>
+        <div class="book-summary-zh">📖 要繼承數十億美元，Avery Kylie Grambs只需在Hawthorne大宅再撐過幾週。狗仔隊緊追不捨，財務壓力步步進逼，危險無處不在。當一個神秘的新訪客出現，Avery必須在這場最終對決中做出決定性的選擇。</div>
+        <div class="book-summary-en">📖 To inherit billions, Avery Kylie Grambs just needs to survive a few more weeks at Hawthorne House. With paparazzi hounding her, financial pressure mounting, and danger everywhere, the Hawthorne brothers are the only thing keeping her going. When a mysterious new visitor arrives, Avery must make a decisive choice in this final showdown.</div>
         <div class="hkpl-detail">目前沒有項目在館內架上可供外借 (1 reservation)</div>
       </div>
     </div>
@@ -342,12 +375,14 @@ footer {
           <span class="book-title">8. Grandpa Frank's Great Big Bucket List</span>
           <span class="book-author">— Jenny Pearson</span>
         </div>
+        <div class="book-publisher">🏢 Usborne Publishing / 奧斯本出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 680L</span>
           <span class="meta-tag tag-pages">📄 272頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (6本)</span>
         </div>
-        <div class="book-summary">當Frank發現祖父留給他一份「超級願望清單」和一筆巨款時，他以為這會是有史以來最棒的冒險。但隨著清單上的任務變得越來越瘋狂，Frank逐漸發現祖父真正的用意——幫助他學會面對失去、珍惜當下、勇敢地生活。</div>
+        <div class="book-summary-zh">📖 當Frank發現祖父留給他一份「超級願望清單」和一筆巨款時，他以為這會是有史以來最棒的冒險。但隨著清單上的任務變得越來越瘋狂，Frank逐漸發現祖父真正的用意——幫助他學會面對失去、珍惜當下、勇敢地生活。</div>
+        <div class="book-summary-en">📖 When Frank discovers his grandpa left him a 'super bucket list' and a large sum of money, he thinks it will be the greatest adventure ever. But as the list's tasks grow increasingly wild, Frank gradually realizes his grandpa's true purpose — helping him learn to face loss, cherish the present, and live bravely.</div>
         <div class="hkpl-detail">1 record: 2022 Usborne edition, 6 copies across multiple libraries</div>
       </div>
     </div>
@@ -358,12 +393,14 @@ footer {
           <span class="book-title">9. Incredible Space Raiders from Space!</span>
           <span class="book-author">— Wesley King</span>
         </div>
+        <div class="book-publisher">🏢 Simon & Schuster / 西蒙與舒斯特</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 690L</span>
           <span class="meta-tag tag-pages">📄 304頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">在2156年，Jonah在「神奇飛翔松鼠號」上醒來，被告知他是200名被訓練為「太空奇襲隊」的孩子之一，任務是摧毀黑暗區域的「完全邪惡之物」，但事情遠比任何孩子能想像的更加複雜。</div>
+        <div class="book-summary-zh">📖 在2156年，Jonah在「神奇飛翔松鼠號」上醒來，被告知他是200名被訓練為「太空奇襲隊」的孩子之一，任務是摧毀黑暗區域的「完全邪惡之物」，但事情遠比任何孩子能想像的更加複雜。</div>
+        <div class="book-summary-en">📖 In the year 2156, Jonah wakes up aboard the Amazing Flying Squirrel and is told he is one of 200 children trained as 'Space Raiders', tasked with destroying the 'Absolutely Evil Thing' in the Dark Zone. But things turn out to be far more complicated than any child could imagine.</div>
         <div class="hkpl-detail">Not found in HKPL catalog. Wesley King has OCDaniel and Sara and the search for normal but not this title</div>
       </div>
     </div>
@@ -374,12 +411,14 @@ footer {
           <span class="book-title">10. Fuzzy Mud</span>
           <span class="book-author">— Louis Sachar</span>
         </div>
+        <div class="book-publisher">🏢 Bloomsbury / 布盧姆斯伯里</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 700L</span>
           <span class="meta-tag tag-pages">📄 192頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (46本)</span>
         </div>
-        <div class="book-summary">五年級生塔瑪亞為了避免被欺負，和同學馬歇爾走了一條不該走的捷徑，穿過了一片神秘的森林。他們在那裡發現了一種奇怪的「絨泥」，這種物質會導致奇怪的病變，並引發了一場威脅整個社區的危機。</div>
+        <div class="book-summary-zh">📖 五年級生塔瑪亞為了避免被欺負，和同學馬歇爾走了一條不該走的捷徑，穿過了一片神秘的森林。他們在那裡發現了一種奇怪的「絨泥」，這種物質會導致奇怪的病變，並引發了一場威脅整個社區的危機。</div>
+        <div class="book-summary-en">📖 Fifth-grader Tamaya takes a forbidden shortcut through a mysterious forest with classmate Marshall to avoid a bully. There they discover a strange 'fuzzy mud' that causes bizarre symptoms — soon triggering a crisis that threatens the entire community.</div>
         <div class="hkpl-detail">3 editions found: English (6+3 copies), Chinese translation (37 copies)</div>
       </div>
     </div>
@@ -390,12 +429,14 @@ footer {
           <span class="book-title">11. Adam Wins the Internet</span>
           <span class="book-author">— Adam Beales</span>
         </div>
+        <div class="book-publisher">🏢 Bloomsbury Children's Books / 布盧姆斯伯里兒童</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 720L</span>
           <span class="meta-tag tag-pages">📄 384頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">十四歲的Adam Beales夢想成為一名YouTuber，但在現實生活中他只是一名普通的中學生。當他意外獲得一個神秘裝置、能夠操控互聯網時，他終於有機會實現夢想。然而，操控互聯網的力量也帶來了意想不到的後果。</div>
+        <div class="book-summary-zh">📖 十四歲的Adam Beales夢想成為一名YouTuber，但在現實生活中他只是一名普通的中學生。當他意外獲得一個神秘裝置、能夠操控互聯網時，他終於有機會實現夢想。然而，操控互聯網的力量也帶來了意想不到的後果。</div>
+        <div class="book-summary-en">📖 Fourteen-year-old Adam Beales dreams of becoming a YouTuber, but in real life he's just an ordinary middle-schooler. When he unexpectedly obtains a mysterious device that can control the internet, he finally gets his chance — but the power to control the internet brings unforeseen consequences.</div>
         <div class="hkpl-detail">Not found in HKPL catalog. Adam Beales search returns unrelated Thailand travel guide</div>
       </div>
     </div>
@@ -406,12 +447,14 @@ footer {
           <span class="book-title">12. The Remarkable Journey of Coyote Sunrise</span>
           <span class="book-author">— Dan Gemeinhart</span>
         </div>
+        <div class="book-publisher">🏢 Henry Holt (BYR) / 亨利·霍爾特</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 730L</span>
           <span class="meta-tag tag-pages">📄 352頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (15本)</span>
         </div>
-        <div class="book-summary">Coyote Sunrise和她的父親五年來一直住在一輛改裝的校車上，四處旅行，從不回頭。但當她得知她小時候埋藏的記憶盒子即將被拆除時，她必須說服父親在三千英里的旅程中，面對他們一直逃避的過去。</div>
+        <div class="book-summary-zh">📖 Coyote Sunrise和她的父親五年來一直住在一輛改裝的校車上，四處旅行，從不回頭。但當她得知她小時候埋藏的記憶盒子即將被拆除時，她必須說服父親在三千英里的旅程中，面對他們一直逃避的過去。</div>
+        <div class="book-summary-en">📖 Coyote Sunrise and her father have lived in a converted school bus for five years, travelling constantly and never looking back. But when she learns the memory box she buried as a child is about to be demolished, she must convince her father to face the past they've been running from — on a three-thousand-mile journey.</div>
         <div class="hkpl-detail">Chinese edition only: 開著校車去流浪, 15 copies available. English edition not found</div>
       </div>
     </div>
@@ -422,28 +465,32 @@ footer {
           <span class="book-title">13. A Wrinkle in Time</span>
           <span class="book-author">— Madeleine L'Engle</span>
         </div>
+        <div class="book-publisher">🏢 Farrar, Straus and Giroux / 法拉爾·斯特勞斯·吉魯</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 740L</span>
           <span class="meta-tag tag-pages">📄 245頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (11本)</span>
         </div>
-        <div class="book-summary">Meg Murry和她的弟弟Charles Wallace以及朋友Calvin，在三位神秘女士的引導下，穿越時空去尋找他們失蹤的父親——一位正在研究神秘超立方體（tesseract）項目的科學家。這是一場跨越維度的科幻奇幻冒險。</div>
+        <div class="book-summary-zh">📖 Meg Murry和她的弟弟Charles Wallace以及朋友Calvin，在三位神秘女士的引導下，穿越時空去尋找他們失蹤的父親——一位正在研究神秘超立方體（tesseract）項目的科學家。這是一場跨越維度的科幻奇幻冒險。</div>
+        <div class="book-summary-en">📖 Meg Murry, her brother Charles Wallace, and friend Calvin are guided by three mysterious ladies on a journey across time and space to find their missing father — a scientist studying a mysterious tesseract project. A sci-fi fantasy adventure spanning dimensions.</div>
         <div class="hkpl-detail">12 records. Audiobook (5 copies), 2018 Puffin ed. (6 copies). Some editions unavailable</div>
       </div>
     </div>
     <div class="book-card">
-      <img class="book-cover" src="https://covers.openlibrary.org/b/isbn/9781526639486-L.jpg" alt="Adam Destroys the Internet" loading="lazy" onerror="this.style.display='none'">
+      <img class="book-cover" src="https://m.media-amazon.com/images/I/91e4hgpj2OL._SY500_.jpg" alt="Adam Destroys the Internet" loading="lazy" onerror="this.style.display='none'">
       <div class="book-info">
         <div class="book-header">
           <span class="book-title">14. Adam Destroys the Internet</span>
           <span class="book-author">— Adam Beales</span>
         </div>
+        <div class="book-publisher">🏢 Bloomsbury Children's Books / 布盧姆斯伯里兒童</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 740L</span>
           <span class="meta-tag tag-pages">📄 400頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">上一集Adam靠神秘裝置成功成為互聯網紅人，但在續集中，他發現這個裝置的力量開始失控。當虛擬世界和現實世界的界線變得模糊，Adam必須修復他造成的混亂，並學會真正的影響力來自於做自己。</div>
+        <div class="book-summary-zh">📖 上一集Adam靠神秘裝置成功成為互聯網紅人，但在續集中，他發現這個裝置的力量開始失控。當虛擬世界和現實世界的界線變得模糊，Adam必須修復他造成的混亂，並學會真正的影響力來自於做自己。</div>
+        <div class="book-summary-en">📖 In the previous book, Adam used a mysterious device to become an internet sensation. But in this sequel, he discovers the device's power is spiralling out of control. As the line between virtual and real worlds blurs, Adam must fix the chaos he's created and learn that true influence comes from being yourself.</div>
         <div class="hkpl-detail">Not found in HKPL catalog (same as above - author not in system for these titles)</div>
       </div>
     </div>
@@ -454,12 +501,14 @@ footer {
           <span class="book-title">15. The Unteachables</span>
           <span class="book-author">— Gordon Korman</span>
         </div>
+        <div class="book-publisher">🏢 Balzer + Bray / 巴爾澤+布雷</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 740L</span>
           <span class="meta-tag tag-pages">📄 288頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">一群被學校放棄的「不可教的」學生被分到了同一個班級，由一位即將退休的老師齊默曼先生帶領。最初大家互相看不順眼，但隨著時間推移，老師和學生們共同努力，克服各自的困難，證明了沒有人是真正不可教的。</div>
+        <div class="book-summary-zh">📖 一群被學校放棄的「不可教的」學生被分到了同一個班級，由一位即將退休的老師齊默曼先生帶領。最初大家互相看不順眼，但隨著時間推移，老師和學生們共同努力，克服各自的困難，證明了沒有人是真正不可教的。</div>
+        <div class="book-summary-en">📖 A group of 'unteachable' students written off by their school are placed together in one class led by Mr. Kermit, a teacher on the verge of retirement. At first everyone clashes, but over time, teacher and students work together, overcome their individual struggles, and prove that no one is truly unteachable.</div>
         <div class="hkpl-detail">1 record found but 目前沒有項目在館內架上可供外借 (no items available for borrowing)</div>
       </div>
     </div>
@@ -470,12 +519,14 @@ footer {
           <span class="book-title">16. House of Robots</span>
           <span class="book-author">— James Patterson</span>
         </div>
+        <div class="book-publisher">🏢 Jimmy Patterson / 吉米·帕特森</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 750L</span>
           <span class="meta-tag tag-pages">📄 352頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (22本)</span>
         </div>
-        <div class="book-summary">五年級生Sammy Hayes-Rodriguez努力融入學校生活，因為他的發明家母親要求他帶著她最新的發明——一個機器人「弟弟」去上學，讓這個機器人學習如何成為一名學生。</div>
+        <div class="book-summary-zh">📖 五年級生Sammy Hayes-Rodriguez努力融入學校生活，因為他的發明家母親要求他帶著她最新的發明——一個機器人「弟弟」去上學，讓這個機器人學習如何成為一名學生。</div>
+        <div class="book-summary-en">📖 Fifth-grader Sammy Hayes-Rodriguez struggles to fit in at school when his inventor mother insists he bring her latest creation — a robot 'brother' — to school so it can learn how to be a student.</div>
         <div class="hkpl-detail">10+ records. House of Robots book 1: 3+17 copies, Robots Go Wild: 2 copies, plus audiobooks</div>
       </div>
     </div>
@@ -486,12 +537,14 @@ footer {
           <span class="book-title">17. The Westing Game</span>
           <span class="book-author">— Ellen Raskin</span>
         </div>
+        <div class="book-publisher">🏢 Puffin Books / 海雀出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 750L</span>
           <span class="meta-tag tag-pages">📄 208頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (22本)</span>
         </div>
-        <div class="book-summary">億萬富翁山姆·威斯汀去世後，十六位看似毫不相關的繼承人被召集到他的遺囑宣讀會上，並被分成八組進行一場謎題競賽。贏家將繼承巨額遺產。隨著謎題一個接一個被揭開，參賽者發現這場遊戲背後隱藏著更深的秘密和驚人的真相。</div>
+        <div class="book-summary-zh">📖 億萬富翁山姆·威斯汀去世後，十六位看似毫不相關的繼承人被召集到他的遺囑宣讀會上，並被分成八組進行一場謎題競賽。贏家將繼承巨額遺產。隨著謎題一個接一個被揭開，參賽者發現這場遊戲背後隱藏著更深的秘密和驚人的真相。</div>
+        <div class="book-summary-en">📖 After billionaire Sam Westing dies, sixteen seemingly unrelated heirs are summoned to his will reading and divided into eight pairs to compete in a puzzle contest. The winner inherits a vast fortune. As the clues unfold, the contestants discover deeper secrets and a shocking truth behind the game.</div>
         <div class="hkpl-detail">English edition unavailable. Chinese editions available: 威斯汀遊戲 (3 copies) + 繼承人遊戲 (19 copies)</div>
       </div>
     </div>
@@ -502,12 +555,14 @@ footer {
           <span class="book-title">18. Pax</span>
           <span class="book-author">— Sara Pennypacker</span>
         </div>
+        <div class="book-publisher">🏢 Balzer + Bray / 巴爾澤+布雷</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 760L</span>
           <span class="meta-tag tag-pages">📄 288頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (15本)</span>
         </div>
-        <div class="book-summary">男孩Peter和他的狐狸Pax從小形影不離，但戰爭來臨時，Peter的父親強迫他將Pax放歸野外。分開後，Peter無法忍受失去摯友的痛苦，獨自踏上三百英里的旅程去尋找Pax；同時，Pax也在陌生的荒野中學習生存，等待他的男孩回來。</div>
+        <div class="book-summary-zh">📖 男孩Peter和他的狐狸Pax從小形影不離，但戰爭來臨時，Peter的父親強迫他將Pax放歸野外。分開後，Peter無法忍受失去摯友的痛苦，獨自踏上三百英里的旅程去尋找Pax；同時，Pax也在陌生的荒野中學習生存，等待他的男孩回來。</div>
+        <div class="book-summary-en">📖 Boy Peter and his fox Pax have been inseparable since Pax was a kit. But when war comes, Peter's father forces him to release Pax into the wild. Unable to bear the separation, Peter embarks on a three-hundred-mile journey to find Pax — while Pax learns to survive in an unfamiliar wilderness, waiting for his boy to return.</div>
         <div class="hkpl-detail">5 records: 3 English editions (5+5+5 copies), 1 Chinese edition. Plus Pax Journey Home (5 copies)</div>
       </div>
     </div>
@@ -518,12 +573,14 @@ footer {
           <span class="book-title">19. The Giver</span>
           <span class="book-author">— Lois Lowry</span>
         </div>
+        <div class="book-publisher">🏢 Houghton Mifflin / 霍頓·米夫林</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 760L</span>
           <span class="meta-tag tag-pages">📄 240頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (7本)</span>
         </div>
-        <div class="book-summary">十二歲的喬納斯生活在一個看似完美的烏托邦社會，這裡沒有痛苦、沒有戰爭，但也沒有顏色、音樂和記憶。當他被選為「記憶傳承者」後，從「賜予者」那裡接收了人類所有的記憶，逐漸發現這個社會背後的真相，並決定做出改變。</div>
+        <div class="book-summary-zh">📖 十二歲的喬納斯生活在一個看似完美的烏托邦社會，這裡沒有痛苦、沒有戰爭，但也沒有顏色、音樂和記憶。當他被選為「記憶傳承者」後，從「賜予者」那裡接收了人類所有的記憶，逐漸發現這個社會背後的真相，並決定做出改變。</div>
+        <div class="book-summary-en">📖 Twelve-year-old Jonas lives in a seemingly perfect utopian society with no pain, no war — but also no colour, music, or memories. When he is selected as the Receiver of Memory, he receives all of humanity's memories from The Giver and gradually discovers the dark truth behind his society, deciding he must take action.</div>
         <div class="hkpl-detail">21 records, some editions available: 2014 ed. (6 copies), 2014 Houghton Mifflin ed. (1 copy), older editions unavailable</div>
       </div>
     </div>
@@ -534,12 +591,14 @@ footer {
           <span class="book-title">20. Aliens on Vacation</span>
           <span class="book-author">— Clete Barrett Smith</span>
         </div>
+        <div class="book-publisher">🏢 Disney-Hyperion / 迪士尼-亥伯龍</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 770L</span>
           <span class="meta-tag tag-pages">📄 272頁</span>
           <span class="meta-tag tag-hkpl-no">❌ 暫無</span>
         </div>
-        <div class="book-summary">一個男孩被送到他奶奶經營的旅館過暑假，卻發現這間旅館的客人全都是來自外太空的外星人。他必須幫助奶奶隱藏這些外星訪客的身份，同時應付一個懷疑一切的地方警長。</div>
+        <div class="book-summary-zh">📖 一個男孩被送到他奶奶經營的旅館過暑假，卻發現這間旅館的客人全都是來自外太空的外星人。他必須幫助奶奶隱藏這些外星訪客的身份，同時應付一個懷疑一切的地方警長。</div>
+        <div class="book-summary-en">📖 A boy is sent to spend summer at his grandmother's bed-and-breakfast, only to discover the guests are all aliens from outer space. He must help his grandmother hide their extraterrestrial visitors while dealing with a suspicious local sheriff.</div>
         <div class="hkpl-detail">Not found in HKPL catalog. Search returns unrelated 'My cousin, the alien' by Pamela F. Service</div>
       </div>
     </div>
@@ -550,12 +609,14 @@ footer {
           <span class="book-title">21. The Many Worlds of Albie Bright</span>
           <span class="book-author">— Christopher Edge</span>
         </div>
+        <div class="book-publisher">🏢 Nosy Crow / 諾西克羅出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 840L</span>
           <span class="meta-tag tag-pages">📄 192頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (11本)</span>
         </div>
-        <div class="book-summary">當Albie Bright的科學家母親去世後，他決定用量子物理學的方法去尋找她。利用父親的粒子加速器和一隻死去的貓，Albie穿越平行宇宙尋找母親還活著的世界，卻在旅途中發現了關於愛、失去和科學的深刻真相。</div>
+        <div class="book-summary-zh">📖 當Albie Bright的科學家母親去世後，他決定用量子物理學的方法去尋找她。利用父親的粒子加速器和一隻死去的貓，Albie穿越平行宇宙尋找母親還活著的世界，卻在旅途中發現了關於愛、失去和科學的深刻真相。</div>
+        <div class="book-summary-en">📖 When Albie Bright's scientist mother dies, he decides to use quantum physics to find her. Using his father's particle accelerator and a dead cat, Albie travels through parallel universes searching for a world where his mother is still alive — discovering profound truths about love, loss, and science along the way.</div>
         <div class="hkpl-detail">1 record: 2016 Nosy Crow edition, 11 copies across multiple libraries</div>
       </div>
     </div>
@@ -566,12 +627,14 @@ footer {
           <span class="book-title">22. The Infinite Lives of Maisie Day</span>
           <span class="book-author">— Christopher Edge</span>
         </div>
+        <div class="book-publisher">🏢 Nosy Crow / 諾西克羅出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 850L</span>
           <span class="meta-tag tag-pages">📄 176頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (9本)</span>
         </div>
-        <div class="book-summary">在十歲生日當天，天才少女Maisie Day醒來發現自己被困在一個不斷重複的時空循環中，而她的家人全都消失了。為了逃離這個無限循環，Maisie必須運用自己的科學知識解開宇宙的奧秘，並面對生命中最艱難的問題。</div>
+        <div class="book-summary-zh">📖 在十歲生日當天，天才少女Maisie Day醒來發現自己被困在一個不斷重複的時空循環中，而她的家人全都消失了。為了逃離這個無限循環，Maisie必須運用自己的科學知識解開宇宙的奧秘，並面對生命中最艱難的問題。</div>
+        <div class="book-summary-en">📖 On her tenth birthday, child genius Maisie Day wakes up trapped in an endlessly repeating time loop — with her entire family vanished. To escape the infinite cycle, Maisie must use her scientific knowledge to unlock the mysteries of the universe and face life's hardest questions.</div>
         <div class="hkpl-detail">1 record: 2018 Nosy Crow edition, 9 copies across multiple libraries</div>
       </div>
     </div>
@@ -582,12 +645,14 @@ footer {
           <span class="book-title">23. The Landry News</span>
           <span class="book-author">— Andrew Clements</span>
         </div>
+        <div class="book-publisher">🏢 Atheneum Books / 雅典娜出版社</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 950L</span>
           <span class="meta-tag tag-pages">📄 144頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (23本)</span>
         </div>
-        <div class="book-summary">卡拉·蘭德里是五年級的學生，她在班上創辦了一份報紙《蘭德里新聞》。起初只是一份小報紙，但當她開始報導學校的問題，包括一位老師的教學方式時，引發了校園內的爭議與討論，最終促成了改變與理解。</div>
+        <div class="book-summary-zh">📖 卡拉·蘭德里是五年級的學生，她在班上創辦了一份報紙《蘭德里新聞》。起初只是一份小報紙，但當她開始報導學校的問題，包括一位老師的教學方式時，引發了校園內的爭議與討論，最終促成了改變與理解。</div>
+        <div class="book-summary-en">📖 Cara Landry is a fifth-grader who starts a class newspaper called The Landry News. What begins as a small paper turns controversial when she starts reporting on school problems, including a teacher's teaching methods — sparking debate and ultimately leading to change and understanding.</div>
         <div class="hkpl-detail">3 editions found, 1+7+15 copies available across multiple libraries</div>
       </div>
     </div>
@@ -598,12 +663,14 @@ footer {
           <span class="book-title">24. Hatchet</span>
           <span class="book-author">— Gary Paulsen</span>
         </div>
+        <div class="book-publisher">🏢 Simon & Schuster / 西蒙與舒斯特</div>
         <div class="book-meta">
           <span class="meta-tag tag-lexile">🔵 1020L</span>
           <span class="meta-tag tag-pages">📄 192頁</span>
           <span class="meta-tag tag-hkpl-yes">✅ 可借 (1本)</span>
         </div>
-        <div class="book-summary">十三歲的布萊恩搭乘的小型飛機墜毀在加拿大荒野中，飛行員死亡，他成了唯一的倖存者。憑藉著母親送給他的一把手斧，布萊恩必須學會如何在荒野中求生，面對飢餓、野生動物和孤獨，經歷了五十四天的生存考驗。</div>
+        <div class="book-summary-zh">📖 十三歲的布萊恩搭乘的小型飛機墜毀在加拿大荒野中，飛行員死亡，他成了唯一的倖存者。憑藉著母親送給他的一把手斧，布萊恩必須學會如何在荒野中求生，面對飢餓、野生動物和孤獨，經歷了五十四天的生存考驗。</div>
+        <div class="book-summary-en">📖 Thirteen-year-old Brian is the sole survivor when his small plane crashes in the Canadian wilderness, the pilot dead. Armed only with a hatchet — a gift from his mother — Brian must learn to survive in the wild, facing hunger, wild animals, and crushing loneliness through fifty-four days of survival.</div>
         <div class="hkpl-detail">15 records, most editions unavailable. 'Hatchet: the truth' edition has 1 copy at 屯門公共圖書館</div>
       </div>
     </div>
@@ -614,5 +681,20 @@ footer {
   <p>最後更新：2026年7月17日 · 資料來源：OpenLibrary、香港公共圖書館館藏目錄 · 藍思指數為近似值，以實際版本為準</p>
   <p style="margin-top:4px;">Made with ❤️ for Alex's family</p>
 </footer>
+
+<script>
+(function() {
+  var lb = document.createElement('div'); lb.className = 'lightbox';
+  lb.innerHTML = '<img src="" alt="Book cover">';
+  document.body.appendChild(lb);
+  lb.addEventListener('click', function() { lb.classList.remove('show'); });
+  document.addEventListener('keydown', function(e) { if (e.key === "Escape") lb.classList.remove('show'); });
+  document.querySelectorAll('.book-cover').forEach(function(img) {
+    img.addEventListener('click', function(e) {
+      e.stopPropagation(); lb.querySelector('img').src = this.src; lb.classList.add('show');
+    });
+  });
+})();
+</script>
 </body>
 </html>
