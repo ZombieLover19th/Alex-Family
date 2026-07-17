@@ -662,5 +662,19 @@ footer {
   <p>最後更新：2026年7月17日 · 資料來源：OpenLibrary、香港公共圖書館館藏目錄 · 藍思指數為近似值，以實際版本為準</p>
   <p style="margin-top:4px;">Made with ❤️ for Alex's family</p>
 </footer>
+<script>
+(function() {
+  var lb = document.createElement("div"); lb.className = "lightbox";
+  lb.innerHTML = '<img src="" alt="Book cover">';
+  document.body.appendChild(lb);
+  lb.addEventListener("click", function() { lb.classList.remove("show"); });
+  document.addEventListener("keydown", function(e) { if (e.key === "Escape") lb.classList.remove("show"); });
+  document.querySelectorAll(".book-cover").forEach(function(img) {
+    img.addEventListener("click", function(e) {
+      e.stopPropagation(); lb.querySelector("img").src = this.src; lb.classList.add("show");
+    });
+  });
+})();
+</script>
 </body>
 </html>
