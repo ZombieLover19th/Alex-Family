@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 兩兄弟嘅終極閱讀冒險！</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Inter:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f1a;
+  --card: #1a1a2e;
+  --text: #e8e8f0;
+  --accent1: #ff6b35;
+  --accent2: #f7c948;
+  --accent3: #4ecdc4;
+  --accent4: #ff6b9d;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 48px 16px;
+  text-align: center;
+  border-bottom: 3px solid var(--accent2);
+}
+.hero h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; }
+.hero p { font-size: 1.2rem; opacity: 0.8; margin-top: 8px; }
+.hero .emoji-row { font-size: 2rem; margin-bottom: 12px; }
+.hero .tagline { color: var(--accent2); font-weight: 700; margin-top: 16px; }
+.container { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+.genre-section { margin-bottom: 32px; }
+.genre-title { 
+  font-size: 1.6rem; font-weight: 900; margin-bottom: 16px;
+  padding: 8px 16px; border-radius: 12px; display: inline-block;
+}
+.genre-gaming { background: #2d1b69; color: #a78bfa; }
+.genre-animals { background: #1b3a1b; color: #4ade80; }
+.genre-scifi { background: #1b2a4a; color: #60a5fa; }
+.genre-mystery { background: #4a1b1b; color: #f87171; }
+.genre-funny { background: #4a3a1b; color: #fbbf24; }
+.genre-adventure { background: #1b4a3a; color: #2dd4bf; }
+
+.book-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 14px;
+  border-left: 4px solid var(--accent2);
+  transition: transform 0.2s;
+}
+.book-card:hover { transform: translateX(6px); }
+.book-header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.book-num { 
+  font-family: 'Inter', sans-serif; font-size: 2rem; font-weight: 900;
+  color: var(--accent2); min-width: 48px;
+}
+.book-title { font-size: 1.25rem; font-weight: 900; }
+.book-author { font-size: 0.9rem; opacity: 0.6; }
+.book-stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.stat { 
+  font-size: 0.8rem; padding: 3px 10px; border-radius: 20px;
+  font-weight: 700;
+}
+.stat-lexile { background: #1e3a5f; color: #93c5fd; }
+.stat-pages { background: #3a1e5f; color: #c4b5fd; }
+.book-hook { 
+  font-size: 1rem; margin: 10px 0; padding: 10px 14px;
+  background: rgba(255,255,255,0.05); border-radius: 10px;
+  border-left: 3px solid var(--accent3);
+}
+.book-vibe { font-size: 0.85rem; opacity: 0.7; font-style: italic; }
+.rating { color: var(--accent2); font-size: 0.85rem; }
+footer { text-align: center; padding: 32px; opacity: 0.5; font-size: 0.85rem; }
+.back-link { 
+  display: inline-block; margin: 16px; padding: 8px 20px;
+  background: var(--accent1); color: white; border-radius: 24px;
+  text-decoration: none; font-weight: 700;
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="emoji-row">📚🐿️🦍🎮🦅🧪📱🦊👽🤖</div>
+  <h1>兩兄弟嘅終極閱讀冒險！</h1>
+  <p>15 本媽媽精選 · 等你哋嚟挑戰</p>
+  <div class="tagline">🔥 每本都係一場冒險 — 睇完一本，包你忍唔住想睇下一本！</div>
+</div>
+
+<div class="container">
+
+<!-- ====== 🎮 打機迷必睇 ====== -->
+<div class="genre-section">
+<div class="genre-title genre-gaming">🎮 打機迷必睇</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#3</div>
+    <div>
+      <div class="book-title">Trapped in a Video Game 🕹️</div>
+      <div class="book-author">Dustin Brady · 600L · 160頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    💀 <strong>如果玩遊戲輸咗 = 永遠被困喺遊戲入面</strong>，你仲敢唔敢玩？<br>
+    傑西同佢嘅天才朋友發明咗一個方法可以<strong>真正進入</strong>電玩世界！但當佢哋被困喺遊戲入面，先發現呢個唔係普通遊戲——<strong>每一條命都係最後一條命</strong>。要通關先可以返到現實世界！
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意 Mario + Fortnite + 冒險遊戲嘅你</div>
+  <div class="rating">⭐ 緊張程度：🤯🤯🤯🤯🤯</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#11</div>
+    <div>
+      <div class="book-title">Adam Wins the Internet 📱</div>
+      <div class="book-author">Adam Beales · 720L · 384頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🌟 <strong>14 歲嘅普通中學生 Adam，夢想成為 YouTuber</strong>⋯⋯然後佢得到一個神秘裝置，可以<strong>操控整個互聯網</strong>！<br>
+    突然爆紅、數百萬粉絲、無數 like⋯⋯但操控互聯網嘅力量，帶嚟嘅麻煩遠比佢想像中大！<strong>你願意用「做自己」換取「做網紅」嗎？</strong>
+  </div>
+  <div class="book-vibe">🎯 啱晒：成日睇 YouTube、夢想成為 YouTuber 嘅你</div>
+  <div class="rating">⭐ 爆笑程度：😂😂😂😂</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#14</div>
+    <div>
+      <div class="book-title">Adam Destroys the Internet 💥</div>
+      <div class="book-author">Adam Beales · 740L · 400頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    😱 Adam 已經係互聯網紅人⋯⋯但個神秘裝置<strong>開始失控</strong>！<br>
+    虛擬世界同現實世界嘅界線<strong>全部爛晒</strong>。佢搞出嚟嘅混亂，遠超任何人想像。<strong>你可以修理一個已經完全失控嘅互聯網嗎？</strong>
+  </div>
+  <div class="book-vibe">🎯 續集更爆！睇完 #11 一定要睇呢本</div>
+  <div class="rating">⭐ 瘋狂程度：🤯🤯🤯🤯🤯</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#16</div>
+    <div>
+      <div class="book-title">House of Robots 🤖</div>
+      <div class="book-author">James Patterson · 750L · 352頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🏫 想像下⋯⋯你阿媽係發明家，佢逼你<strong>帶住一個機械人「細佬」返學</strong>！<br>
+    Sammy 嘅阿媽發明咗一個會行會講嘅機器人，仲要佢帶返學「學習做學生」。<strong>機械人返學會發生咩災難？</strong>答案一定超出你想像！
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意機械人 + 校園搞笑嘅你</div>
+  <div class="rating">⭐ 搞笑程度：😂😂😂😂😂</div>
+</div>
+</div>
+
+<!-- ====== 🐾 動物冒險 ====== -->
+<div class="genre-section">
+<div class="genre-title genre-animals">🐾 動物大冒險</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#2</div>
+    <div>
+      <div class="book-title">The One and Only Ivan 🦍</div>
+      <div class="book-author">Katherine Applegate · 570L · 336頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🦍 <strong>一隻喺商場籠裡住咗 27 年嘅大猩猩</strong>，以為世界就只有咁大。<br>
+    直至一隻叫 Ruby 嘅小象出現，提醒咗佢森林嘅味道。<strong>伊凡作出一個承諾：無論如何都要幫 Ruby 逃出去。</strong>一個關於友情、承諾同自由嘅故事。真實感人，唔係卡通。
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意動物、感人故事嘅你（預備紙巾！）</div>
+  <div class="rating">⭐ 感人程度：😭😭😭😭😭</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#18</div>
+    <div>
+      <div class="book-title">Pax 🦊</div>
+      <div class="book-author">Sara Pennypacker · 760L · 288頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🦊 Peter 同佢養大嘅狐狸 Pax 係最好嘅朋友。但戰爭爆發，爸爸逼 Peter <strong>將 Pax 掉低喺野外</strong>。<br>
+    Peter 無法忍受，決定<strong>獨自徒步 300 英里</strong>去搵返 Pax。同一時間，Pax 亦喺野外掙扎求生，等緊佢嘅男孩返嚟。<strong>兩個好朋友，一個搵對方，一個等對方。</strong>
+  </div>
+  <div class="book-vibe">🎯 啱晒：有養寵物、相信友情可以跨越一切嘅你</div>
+  <div class="rating">⭐ 感動程度：😭😭😭😭 冒險程度：💪💪💪</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#6</div>
+    <div>
+      <div class="book-title">Bird Boy 🦅</div>
+      <div class="book-author">Catherine Bruton · 660L · 304頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🦅 Will 失去媽媽後，被送去同從未見過嘅阿爺住。佢覺得世界冇人明白佢⋯⋯<strong>直至佢發現觀鳥</strong>。<br>
+    一隻罕見嘅白尾海鵰改變咗一切。大自然嘅力量、新朋友嘅溫暖，幫佢<strong>喺最黑暗嘅日子入面搵返自己</strong>。
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意大自然、或者需要一個溫暖故事嘅你</div>
+  <div class="rating">⭐ 溫暖程度：💛💛💛💛💛</div>
+</div>
+</div>
+
+<!-- ====== 🧪 科幻奇想 ====== -->
+<div class="genre-section">
+<div class="genre-title genre-scifi">🧪 科幻奇想 · 平行宇宙</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#21</div>
+    <div>
+      <div class="book-title">The Many Worlds of Albie Bright 🌌</div>
+      <div class="book-author">Christopher Edge · 840L · 192頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    ⚛️ 媽媽過身後，Albie 決定用<strong>量子物理學</strong>去搵佢！<br>
+    用緊阿爸嘅粒子加速器 + 一隻死咗嘅貓（量子力學經典！），Albie <strong>穿越平行宇宙</strong>去搵媽媽仲在生嘅世界。每個宇宙都唔同——有啲奇怪到爆，有啲令人心碎。
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意科學、宇宙、「如果⋯⋯會點？」嘅你</div>
+  <div class="rating">⭐ 奇想程度：🌌🌌🌌🌌🌌</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#22</div>
+    <div>
+      <div class="book-title">The Infinite Lives of Maisie Day 🔄</div>
+      <div class="book-author">Christopher Edge · 850L · 176頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🎂 10 歲生日當天，天才少女 Maisie 醒來發現——<strong>佢被困喺時間循環入面</strong>！<br>
+    同一日不斷重複，而佢嘅家人全部消失咗。<strong>要逃出呢個無限循環，Maisie 必須用科學解開宇宙嘅奧秘。</strong>當科學遇上想像力——結局會令你目瞪口呆。
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意燒腦、時空旅行、反轉結局嘅你</div>
+  <div class="rating">⭐ 燒腦程度：🧠🧠🧠🧠🧠</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#10</div>
+    <div>
+      <div class="book-title">Fuzzy Mud 🟢</div>
+      <div class="book-author">Louis Sachar · 700L · 192頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    ☣️ 為咗避開校園欺凌，Tamaya 同 Marshall 走咗一條<strong>唔應該走嘅捷徑</strong>⋯⋯穿過一片神秘森林。<br>
+    佢哋喺森林發現咗一種叫「絨泥」嘅奇怪物質。初初只係覺得好奇⋯⋯<strong>直到絨泥開始引發病變，威脅成個城市</strong>。
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意刺激、恐怖、科學實驗出事嘅你</div>
+  <div class="rating">⭐ 恐怖程度：😱😱😱 刺激程度：⚡⚡⚡⚡</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#20</div>
+    <div>
+      <div class="book-title">Aliens on Vacation 👽</div>
+      <div class="book-author">Clete Barrett Smith · 770L · 272頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🛸 放暑假去阿嫲嘅旅館⋯⋯<strong>點知全部住客都係外星人</strong>！<br>
+    David 原本以為只係一個無聊嘅暑假。點知阿嫲間旅館係<strong>外星人地球度假村</strong>！佢要幫手隱藏外星人身份，同時應付一個<strong>乜都想查嘅警長</strong>。外星人 + 暑假 = 災難級搞笑！
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意外星人 + 搞笑 + 暑假冒險嘅你</div>
+  <div class="rating">⭐ 搞笑程度：😂😂😂😂😂</div>
+</div>
+</div>
+
+<!-- ====== 🔍 推理解謎 ====== -->
+<div class="genre-section">
+<div class="genre-title genre-mystery">🔍 推理解謎</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#17</div>
+    <div>
+      <div class="book-title">The Westing Game 🕵️</div>
+      <div class="book-author">Ellen Raskin · 750L · 208頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    💰 億萬富翁死咗。16 個陌生人被叫去聽遺囑。<strong>贏咗場謎題比賽就可以繼承巨額遺產</strong>。<br>
+    八組參賽者，一個又一個謎題。但呢場比賽背後<strong>仲有更深嘅秘密</strong>⋯⋯真正嘅贏家一早已經被選定。你能夠喺最後一頁之前解開謎底嗎？
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意推理、謎題、「兇手係邊個」嘅你</div>
+  <div class="rating">⭐ 燒腦程度：🧠🧠🧠🧠 驚喜程度：🤯🤯🤯🤯🤯</div>
+</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#7</div>
+    <div>
+      <div class="book-title">The Final Gambit ♟️</div>
+      <div class="book-author">Jennifer Lynn Barnes · 660L · 400頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🏰 要繼承幾十億美元，Avery 只需要喺 Hawthorne 大宅<strong>再撐多幾個禮拜</strong>⋯⋯<br>
+    但狗仔隊全天候追蹤、神秘新訪客出現、致命危險四伏。<strong>最後對決，唔係贏就係輸晒全部。</strong>一個天才少女 vs 一個億萬家族嘅終極博弈。
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意富豪家族秘密 + 高風險遊戲嘅你</div>
+  <div class="rating">⭐ 緊張程度：😰😰😰😰 反轉程度：🤯🤯🤯</div>
+</div>
+</div>
+
+<!-- ====== 😂 爆笑系列 ====== -->
+<div class="genre-section">
+<div class="genre-title genre-funny">😂 爆笑保證</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#1</div>
+    <div>
+      <div class="book-title">The Dead Sea Squirrels 🐿️</div>
+      <div class="book-author">Mike Nawrocki · 520L · 128頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🐿️ <strong>兩隻喺死海洞穴被發現嘅松鼠木乃伊⋯⋯竟然復活了！</strong><br>
+    想像下：兩隻二千年前嘅松鼠，突然醒返，要喺現代世界生活。同一個現代男孩組成<strong>史上最奇怪嘅三人組</strong>，笑料保證！短章節、大字體，英文初階必讀。
+  </div>
+  <div class="book-vibe">🎯 啱晒：英文啱啱開始睇 chapter book 嘅你</div>
+  <div class="rating">⭐ 搞笑程度：😂😂😂😂 易睇程度：👍👍👍👍👍</div>
+</div>
+</div>
+
+<!-- ====== 🌍 真摯旅程 ====== -->
+<div class="genre-section">
+<div class="genre-title genre-adventure">🌍 心靈旅程</div>
+
+<div class="book-card">
+  <div class="book-header">
+    <div class="book-num">#12</div>
+    <div>
+      <div class="book-title">The Remarkable Journey of Coyote Sunrise 🚌</div>
+      <div class="book-author">Dan Gemeinhart · 730L · 352頁</div>
+    </div>
+  </div>
+  <div class="book-hook">
+    🚌 Coyote 同佢爸爸住喺一架<strong>改裝校車</strong>上面，五年嚟四圍旅行，<strong>永遠唔回頭望</strong>。<br>
+    直至 Coyote 發現佢細個埋藏嘅記憶盒子<strong>即將被剷除</strong>。佢得幾日時間，要說服爸爸<strong>橫跨 3000 英里</strong>去拯救過去。一趟令你又笑又喊嘅公路旅程。
+  </div>
+  <div class="book-vibe">🎯 啱晒：鍾意公路冒險 + 感人父女故事嘅你</div>
+  <div class="rating">⭐ 感動程度：😭😭😭 冒險程度：🚌🚌🚌🚌</div>
+</div>
+</div>
+
+</div>
+
+<div style="text-align:center; padding: 20px;">
+  <a href="https://zombielover19th.github.io/Alex-Family/" class="back-link">📚 返去完整書單（有封面 + 圖書館資訊）</a>
+</div>
+
+<footer>
+  🚀 15 本書 · 15 場冒險 · 由媽媽精選<br>
+  揀一本開始你嘅旅程啦！
+</footer>
+
+</body>
+</html>
