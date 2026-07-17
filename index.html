@@ -200,6 +200,14 @@ footer {
   body { background: white; }
   .book-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
 }
+
+.lightbox { display:none;position:fixed;z-index:9999;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;cursor:pointer;animation:fadeIn 0.2s; }
+.lightbox.show { display:flex; }
+.lightbox img { max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:zoomIn 0.2s; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes zoomIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+.book-cover { cursor:pointer; }
+
 </style>
 </head>
 <body>
@@ -675,6 +683,9 @@ footer {
     });
   });
 })();
+</script>
+<script>
+(function(){var lb=document.createElement("div");lb.className="lightbox";lb.innerHTML='<img src="" alt="Book cover">';document.body.appendChild(lb);lb.addEventListener("click",function(){lb.classList.remove("show")});document.addEventListener("keydown",function(e){if(e.key==="Escape")lb.classList.remove("show")});document.querySelectorAll(".book-cover").forEach(function(img){img.addEventListener("click",function(e){e.stopPropagation();lb.querySelector("img").src=this.src;lb.classList.add("show")})})})();
 </script>
 </body>
 </html>
