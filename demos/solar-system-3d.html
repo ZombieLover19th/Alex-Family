@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>太陽系 3D 模擬 — Nova 直出</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+  #info {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    color: #fff; background: rgba(0,0,0,.6); padding: 8px 20px; border-radius: 20px;
+    font-size: 14px; z-index: 10; pointer-events: none; border: 1px solid rgba(255,255,255,.15);
+    white-space: nowrap;
+  }
+  #controls {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    color: #aaa; font-size: 12px; z-index: 10; pointer-events: none;
+    background: rgba(0,0,0,.5); padding: 6px 16px; border-radius: 16px;
+  }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<div id="info">☀️ 太陽系 3D 模擬 — 拖曳旋轉 · 滾輪縮放 · 行星各自公轉</div>
+<div id="controls">🖱 左鍵拖曳旋轉 &nbsp;|&nbsp; 🔍 滾輪放大縮小 &nbsp;|&nbsp; 土星有光環 · 軌道有星塵光暈</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// ===== 場景、相機、渲染器 =====
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 5000);
+camera.position.set(0, 120, 260);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 15;
+controls.maxDistance = 900;
+
+// ===== 星空背景（星塵） =====
+function makeStars() {
+  const geo = new THREE.BufferGeometry();
+  const count = 6000;
+  const pos = new Float32Array(count * 3);
+  for (let i = 0; i < count * 3; i += 3) {
+    pos[i] = (Math.random() - 0.5) * 1800;
+    pos[i+1] = (Math.random() - 0.5) * 1800;
+    pos[i+2] = (Math.random() - 0.5) * 1800;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.6, transparent: true, opacity: 0.8 });
+  scene.add(new THREE.Points(geo, mat));
+}
+makeStars();
+
+// ===== 太陽 =====
+const sunGeo = new THREE.SphereGeometry(14, 48, 48);
+const sunMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+const sun = new THREE.Mesh(sunGeo, sunMat);
+scene.add(sun);
+
+// 太陽光暈
+const glowGeo = new THREE.SphereGeometry(17, 32, 32);
+const glowMat = new THREE.MeshBasicMaterial({
+  color: 0xff8800, transparent: true, opacity: 0.12,
+  side: THREE.BackSide
+});
+scene.add(new THREE.Mesh(glowGeo, glowMat));
+
+// 點光源（照行星）
+const light = new THREE.PointLight(0xffffff, 2, 600);
+scene.add(light);
+
+// ===== 行星數據 =====
+// name, radius, distance, speed, color, hasRing
+const planets = [
+  { name: '水星', r: 1.2, d: 24,  speed: 4.15, color: 0xaaaaaa },
+  { name: '金星', r: 2.2, d: 34,  speed: 1.62, color: 0xe8c170 },
+  { name: '地球', r: 2.4, d: 46,  speed: 1.00, color: 0x4a90d9 },
+  { name: '火星', r: 1.8, d: 58,  speed: 0.53, color: 0xc1440e },
+  { name: '木星', r: 6.0, d: 78,  speed: 0.084, color: 0xd8a066 },
+  { name: '土星', r: 5.2, d: 102, speed: 0.034, color: 0xe0c080, ring: true },
+  { name: '天王星', r: 3.4, d: 128, speed: 0.012, color: 0x7ec8e3 },
+  { name: '海王星', r: 3.3, d: 152, speed: 0.006, color: 0x3f54ba },
+];
+
+const meshes = [];
+planets.forEach(p => {
+  // 軌道線
+  const orbitGeo = new THREE.BufferGeometry();
+  const pts = [];
+  for (let i = 0; i <= 128; i++) {
+    const a = (i / 128) * Math.PI * 2;
+    pts.push(new THREE.Vector3(Math.cos(a) * p.d, 0, Math.sin(a) * p.d));
+  }
+  orbitGeo.setFromPoints(pts);
+  scene.add(new THREE.Line(orbitGeo, new THREE.LineBasicMaterial({
+    color: 0x334466, transparent: true, opacity: 0.45
+  })));
+
+  // 行星本體
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(p.r, 32, 32),
+    new THREE.MeshPhongMaterial({ color: p.color, shininess: 20 })
+  );
+  mesh.position.x = p.d;
+  mesh.userData = { speed: p.speed, distance: p.d, angle: Math.random() * Math.PI * 2 };
+  scene.add(mesh);
+
+  // 土星光環
+  if (p.ring) {
+    const ringGeo = new THREE.RingGeometry(p.r * 1.4, p.r * 2.3, 64);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0xc8b48a, side: THREE.DoubleSide, transparent: true, opacity: 0.65
+    });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 2.6;
+    mesh.add(ring);
+  }
+
+  // 軌道塵埃光暈（半透明粒子環）
+  const dustCount = 120;
+  const dustGeo = new THREE.BufferGeometry();
+  const dustPos = new Float32Array(dustCount * 3);
+  for (let i = 0; i < dustCount; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const rad = p.d + (Math.random() - 0.5) * 2;
+    dustPos[i*3]   = Math.cos(a) * rad;
+    dustPos[i*3+1] = (Math.random() - 0.5) * 1.2;
+    dustPos[i*3+2] = Math.sin(a) * rad;
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  scene.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({
+    color: 0x88aaff, size: 0.35, transparent: true, opacity: 0.25
+  })));
+
+  meshes.push(mesh);
+});
+
+// ===== 動畫循環 =====
+let t = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  t += 0.005;
+  sun.rotation.y += 0.002;
+  meshes.forEach(m => {
+    const u = m.userData;
+    u.angle += u.speed * 0.008;
+    m.position.x = Math.cos(u.angle) * u.distance;
+    m.position.z = Math.sin(u.angle) * u.distance;
+    m.rotation.y += 0.01;
+  });
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// ===== 視窗縮放 =====
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
