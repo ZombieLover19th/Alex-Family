@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>細胞探索器 Pro — Animal Cell Explorer Pro</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; overflow: hidden; font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; color: #fff; }
+  canvas { display: block; }
+
+  #title { position: fixed; top: 16px; left: 20px; z-index: 10; pointer-events: none; }
+  #title h1 { font-size: 20px; font-weight: 700; letter-spacing: 1px; display:flex; align-items:center; gap:8px; }
+  #title .icon { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #8ef0b0, #2e8b57); box-shadow: 0 0 12px rgba(80,220,140,.5); }
+  #title p { font-size: 11px; color: #8ab; letter-spacing: 2px; margin-top: 2px; }
+
+  /* 切割控制 */
+  #cutPanel {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10;
+    background: rgba(10,15,30,.8); border: 1px solid rgba(100,220,160,.25);
+    border-radius: 20px; padding: 8px 18px; display: flex; align-items: center; gap: 12px;
+    backdrop-filter: blur(4px);
+  }
+  #cutPanel .label { font-size: 12px; color: #9ab; }
+  #cutPanel input[type=range] { width: 120px; accent-color: #4fc3f7; }
+  #cutPanel .val { font-size: 11px; color: #4fc3f7; font-family: Consolas, monospace; min-width: 34px; text-align: center; }
+  #autoSpin { background: rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.2); border-radius: 14px; padding: 3px 10px; font-size: 11px; cursor: pointer; }
+  #autoSpin.active { background: #4fc3f7; color: #000; border-color: #4fc3f7; font-weight: 700; }
+
+  /* 左側 Layer 控制 */
+  #sidebar {
+    position: fixed; top: 70px; left: 20px; z-index: 10; width: 210px;
+    background: rgba(10,15,30,.82); border: 1px solid rgba(100,220,160,.2);
+    border-radius: 12px; padding: 10px; backdrop-filter: blur(4px);
+    max-height: calc(100vh - 140px); overflow-y: auto;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+  #sidebar .shead { font-size: 10px; color: #789; letter-spacing: 2px; padding: 2px 8px 8px; display:flex; justify-content:space-between; align-items:center; }
+  #sidebar .layers-btn { display:flex; gap:4px; }
+  #sidebar .layers-btn button {
+    background: rgba(255,255,255,.06); color:#9ab; border:1px solid rgba(255,255,255,.12);
+    border-radius: 8px; padding: 1px 8px; font-size: 10px; cursor: pointer;
+  }
+  #sidebar .layers-btn button:hover { background: rgba(255,255,255,.15); }
+  #sidebar .row {
+    display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 7px;
+    cursor: pointer; font-size: 12.5px; transition: all .15s; border: 1px solid transparent;
+  }
+  #sidebar .row:hover { background: rgba(255,255,255,.07); }
+  #sidebar .row.active { background: rgba(79,195,247,.15); border-color: rgba(79,195,247,.5); }
+  #sidebar .row.hidden { opacity: .35; }
+  #sidebar .dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  #sidebar .toggle { margin-left:auto; width:26px; height:14px; border-radius:7px; background:rgba(255,255,255,.15); position:relative; flex-shrink:0; transition:background .2s; }
+  #sidebar .toggle.on { background: #2ecc71; }
+  #sidebar .toggle::after { content:''; position:absolute; top:2px; left:2px; width:10px; height:10px; border-radius:50%; background:#fff; transition:left .2s; }
+  #sidebar .toggle.on::after { left: 14px; }
+  #sidebar .grp { font-size: 9px; color: #556; letter-spacing: 1px; padding: 6px 8px 2px; }
+
+  /* 資訊面板 */
+  #infoPanel {
+    position: fixed; top: 70px; right: 20px; z-index: 10; width: 290px;
+    background: rgba(10,15,30,.88); border: 1px solid rgba(100,220,160,.25);
+    border-radius: 12px; padding: 16px; backdrop-filter: blur(6px);
+    display: none; max-height: calc(100vh - 140px); overflow-y: auto;
+  }
+  #infoPanel h2 { font-size: 17px; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
+  #infoPanel .type { font-size: 10px; color: #4fc3f7; letter-spacing: 2px; margin-bottom: 10px; }
+  #infoPanel .size-box {
+    background: rgba(79,195,247,.1); border: 1px dashed rgba(79,195,247,.35);
+    border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #9cf; margin-bottom: 10px;
+  }
+  #infoPanel .desc { font-size: 13px; line-height: 1.7; color: #dde; margin-bottom: 12px; }
+  #infoPanel .fact {
+    background: rgba(79,195,247,.08); border-left: 3px solid #4fc3f7;
+    padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: 12px; color: #9cf; line-height: 1.6; margin-bottom: 12px;
+  }
+  #infoPanel .wrong {
+    background: rgba(255,140,80,.08); border-left: 3px solid #ff8c50;
+    padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: 12px; color: #faa; line-height: 1.6;
+  }
+  #infoPanel .wrong b { color: #ffb08a; }
+
+  /* Tooltip */
+  #tooltip {
+    position: fixed; z-index: 100; pointer-events: none; display: none;
+    background: rgba(8,12,24,.95); border: 1px solid rgba(120,200,255,.35);
+    border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #fff;
+    max-width: 260px; box-shadow: 0 8px 30px rgba(0,0,0,.6);
+  }
+  #tooltip .tt-name { font-weight: 700; color: #7fd8ff; margin-bottom: 3px; }
+  #tooltip .tt-size { color: #ffb347; font-family: Consolas, monospace; font-size: 11px; }
+
+  #hint {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 10;
+    font-size: 11px; color: #779; background: rgba(10,15,30,.6);
+    padding: 6px 16px; border-radius: 16px; pointer-events: none;
+  }
+  #hint b { color: #aac; }
+
+  #cutBadge {
+    position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 10;
+    font-size: 10px; color: #4fc3f7; background: rgba(10,15,30,.6);
+    padding: 3px 12px; border-radius: 10px; display: none; letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div id="title">
+  <span class="icon"></span>
+  <div><h1>The Animal Cell <span style="font-size:11px;color:#789;font-weight:400">PRO</span></h1>
+  <p>INTERACTIVE 3D CELL EXPLORER</p></div>
+</div>
+
+<div id="cutPanel">
+  <span class="label">🔪 剖面</span>
+  <input type="range" id="cutSlider" min="0" max="100" value="0">
+  <span class="val" id="cutVal">0%</span>
+  <button id="autoSpin" class="active">⟳ 自動</button>
+</div>
+<div id="cutBadge">✂ 剖面模式 — 拖動滑桿切開細胞</div>
+
+<div id="sidebar">
+  <div class="shead">CELL LAYERS <span class="layers-btn"><button id="allBtn">ALL</button><button id="noneBtn">NONE</button></span></div>
+  <div class="row" data-key="membrane"><span class="dot" style="background:#7ec8e3"></span>細胞表面 + 質膜<span class="toggle on"></span></div>
+  <div class="row" data-key="cortex"><span class="dot" style="background:#9ad8a8"></span>肌動蛋白皮層<span class="toggle on"></span></div>
+  <div class="grp">細胞核 NUCLEUS</div>
+  <div class="row" data-key="nucleus"><span class="dot" style="background:#7e57c2"></span>細胞核<span class="toggle on"></span></div>
+  <div class="row" data-key="nucleolus"><span class="dot" style="background:#9575cd"></span>核仁<span class="toggle on"></span></div>
+  <div class="grp">內膜系統 ENDOMEMBRANE</div>
+  <div class="row" data-key="er"><span class="dot" style="background:#f06292"></span>內質網（粗+滑）<span class="toggle on"></span></div>
+  <div class="row" data-key="golgi"><span class="dot" style="background:#ffb74d"></span>高爾基體<span class="toggle on"></span></div>
+  <div class="row" data-key="vesicle"><span class="dot" style="background:#ffd54f"></span>運輸囊泡<span class="toggle on"></span></div>
+  <div class="row" data-key="lysosome"><span class="dot" style="background:#ff8a65"></span>溶酶體<span class="toggle on"></span></div>
+  <div class="grp">其他 ORGANELLES</div>
+  <div class="row" data-key="mito1"><span class="dot" style="background:#e57373"></span>粒線體<span class="toggle on"></span></div>
+  <div class="row" data-key="ribosome"><span class="dot" style="background:#a1887f"></span>核糖體<span class="toggle on"></span></div>
+  <div class="row" data-key="vacuole"><span class="dot" style="background:#81d4fa"></span>液泡<span class="toggle on"></span></div>
+  <div class="row" data-key="centriole"><span class="dot" style="background:#ba68c8"></span>中心體<span class="toggle on"></span></div>
+</div>
+
+<div id="infoPanel">
+  <h2 id="pName">粒線體</h2>
+  <div class="type" id="pType">MITOCHONDRION</div>
+  <div class="size-box" id="pSize">🔍 尺寸：約 1-10 μm 長</div>
+  <div class="desc" id="pDesc"></div>
+  <div class="fact" id="pFact"></div>
+  <div class="wrong" id="pWrong"></div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-name" id="ttName"></div>
+  <div class="tt-size" id="ttSize"></div>
+</div>
+
+<div id="hint"><b>DRAG</b> 旋轉 &nbsp;·&nbsp; <b>SCROLL</b> 縮放 &nbsp;·&nbsp; <b>CLICK</b> 細胞器查看知識 &nbsp;·&nbsp; 拖動上方滑桿<b>切開細胞</b></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// ============ 場景 ============
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(0, 6, 30);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 12;
+controls.maxDistance = 80;
+
+(function(){
+  const geo = new THREE.BufferGeometry();
+  const n = 3000, pos = new Float32Array(n*3);
+  for (let i=0;i<n*3;i++) pos[i] = (Math.random()-0.5)*600;
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({color:0x8899bb,size:0.5,transparent:true,opacity:0.5})));
+})();
+
+scene.add(new THREE.AmbientLight(0x8899cc, 0.5));
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+keyLight.position.set(10, 15, 12);
+scene.add(keyLight);
+const rimLight = new THREE.DirectionalLight(0x4fc3f7, 0.5);
+rimLight.position.set(-8, -5, -10);
+scene.add(rimLight);
+scene.add(new THREE.PointLight(0xffffff, 0.4, 40).position.set(2,2,4));
+
+const CELL_R = 9;
+const clipPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);
+let cutAmount = 0;
+const clickables = [];
+
+// ============ 知識庫（每項加「模型邊度唔準」） ============
+const INFO = {
+  membrane: {
+    name: '細胞表面 + 質膜', en: 'Cell Surface & Plasma Membrane', color: 0x7ec8e3,
+    type: 'PLASMA MEMBRANE',
+    size: '🔍 成個細胞約 19 μm 闊 · 質膜約 4-5 nm 厚',
+    desc: '磷脂雙層組成嘅細胞邊界，上面嵌滿蛋白質（通道、受體、酶）。佢控制咩可以進出細胞 — 選擇性通透。氧氣同水自由通過，大分子要專用通道。',
+    fact: '💡 冷知識：質膜唔係靜態牆壁 — 磷脂分子不停橫向流動，所以叫「液體鑲嵌模型」。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真正質膜只有 4-5 nm 厚，但模型為咗俾你肉眼睇到「表面」，畫厚咗約 12-15 倍（約 0.06 μm）。仲省略咗膜外密集嘅醣蛋白外衣。'
+  },
+  cortex: {
+    name: '肌動蛋白皮層', en: 'Actin Cortex', color: 0x9ad8a8,
+    type: 'CYTOSKELETON',
+    size: '🔍 厚度約 0.1-0.2 μm · 纖維直徑約 7 nm',
+    desc: '質膜內側嘅一層肌動蛋白纖維網，好似「鋼筋」咁撐住細胞形狀，仲負責細胞移動同變形。白血球就係靠佢穿過血管壁去追殺細菌。',
+    fact: '💡 冷知識：癌細胞轉移嘅關鍵就係失控咁重組肌動蛋白皮層，令細胞可以鑽入血管擴散全身。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真正嘅皮層係極細密嘅 3D 纖維網（密度高到好似毛氈），模型用稀疏嘅線圈代表，密度差好遠。'
+  },
+  nucleus: {
+    name: '細胞核', en: 'Nucleus', color: 0x7e57c2,
+    type: 'CONTROL CENTER',
+    size: '🔍 直徑約 5-10 μm',
+    desc: '細胞嘅「大腦」— 裝住 DNA（染色質），即係遺傳密碼。所有指令都由呢度發出。雙層核膜上面有核孔，畀 mRNA 同蛋白質出入。',
+    fact: '💡 冷知識：冇核嘅細胞（成熟紅血球）好短命 — 只有約 120 日。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真實細胞核通常唔係完美球體，形狀會跟細胞而變（例如平滑肌細胞嘅核係雪茄形）。模型為咗美觀簡化做球體。'
+  },
+  nucleolus: {
+    name: '核仁', en: 'Nucleolus', color: 0x9575cd,
+    type: 'RIBOSOME FACTORY',
+    size: '🔍 直徑約 1-2 μm',
+    desc: '核糖體工廠 — 製造 rRNA 再同蛋白質組裝成核糖體，送出細胞核。',
+    fact: '💡 冷知識：癌細胞核仁特別大，病理學家會用核仁大小嚟判斷腫瘤惡性程度。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>核仁其實冇膜包住，係核內一個「液-液相分離」嘅凝聚體 — 模型將佢畫成實心球只係方便辨認。'
+  },
+  er: {
+    name: '內質網', en: 'Endoplasmic Reticulum', color: 0xf06292,
+    type: 'PROTEIN & LIPID FACTORY',
+    size: '🔍 膜厚約 5 nm · 網絡佔膜系統約 50%',
+    desc: '細胞核附近嘅膜狀迷宮：粗面內質網（表面有核糖體，造蛋白質）＋ 滑面內質網（造脂質、解毒）。係細胞內嘅「生產線＋高速公路」。',
+    fact: '💡 冷知識：飲酒會令肝細胞嘅滑面內質網增生 — 身體為咗解毒，多咗「機器」去處理酒精。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真實內質網係極複雜嘅連續 3D 迷宮（好似珊瑚咁），模型只畫咗幾塊扁囊代表，複雜度差幾個數量級。'
+  },
+  golgi: {
+    name: '高爾基體', en: 'Golgi Apparatus', color: 0xffb74d,
+    type: 'PACKAGING & SHIPPING',
+    size: '🔍 約 3-5 μm 闊',
+    desc: '細胞嘅「郵局」— 蛋白質同脂質嚟到呢度做最後加工、分類、包裝成囊泡，再送去正確目的地。',
+    fact: '💡 冷知識：高爾基體有「順面」同「反面」之分 — 收貨喺順面，出貨喺反面，單向流水線。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真實高爾基體係一疊彎曲嘅碟（好似一疊煎餅），但模型將佢畫成直疊，弧度同數量都簡化咗。'
+  },
+  vesicle: {
+    name: '運輸囊泡', en: 'Transport Vesicles', color: 0xffd54f,
+    type: 'INTRACELLULAR DELIVERY',
+    size: '🔍 直徑約 40-100 nm',
+    desc: '細胞內嘅「速遞盒」— 細小膜泡，將蛋白質由內質網送去高爾基體，再送去細胞膜分泌，或者送去溶酶體。',
+    fact: '💡 冷知識：神經元釋放神經傳遞物質就係靠囊泡 — 每秒可以釋放幾百個囊泡。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真實囊泡細到得 40-100 nm，模型畫到 0.3 μm（大咗成 5 倍）先至俾你睇到。'
+  },
+  lysosome: {
+    name: '溶酶體', en: 'Lysosomes', color: 0xff8a65,
+    type: 'RECYCLING & DEFENSE',
+    size: '🔍 約 0.1-1.2 μm（通常約 0.5 μm）',
+    desc: '細胞嘅「垃圾處理站」— 裝滿消化酶，分解廢物、老化細胞器、入侵細菌。負責細胞自噬（回收再利用）。',
+    fact: '💡 冷知識：溶酶體酶漏晒出嚟會令細胞自我消化 — 呢個係「細胞凋亡」嘅機制之一，身體靠佢清理老化細胞。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真實溶酶體內部有好多細微結晶狀酶顆粒，模型畫成空心球，內部結構省略咗。'
+  },
+  mito1: {
+    name: '粒線體', en: 'Mitochondria', color: 0xe57373,
+    type: 'POWERHOUSE',
+    size: '🔍 約 1-10 μm 長 · 內膜嵴令表面積增加 5-10 倍',
+    desc: '細胞嘅「發電廠」— 將葡萄糖＋氧氣通過細胞呼吸轉化為 ATP。內膜摺疊成嵴增加表面積，能量生產效率極高。',
+    fact: '💡 冷知識：粒線體有自己 DNA，同細菌 DNA 好似！內共生學說認為粒線體係遠古被細胞吞咗嘅細菌。你嘅粒線體 DNA 只由媽媽遺傳。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真實嵴（cristae）係管狀或者板狀嘅極細結構，模型畫成厚碟片，只為示意。粒線體本身仲會移動、分裂、融合 — 模型靜止咗。'
+  },
+  ribosome: {
+    name: '核糖體', en: 'Ribosomes', color: 0xa1887f,
+    type: 'PROTEIN SYNTHESIS',
+    size: '🔍 約 20-30 nm · 每個細胞約 10⁷ 個',
+    desc: '蛋白質製造機器 — 讀取 mRNA 密碼，將氨基酸串成蛋白質。游離喺細胞質或者黐喺粗面內質網。',
+    fact: '💡 冷知識：紅黴素等抗生素就係黐住細菌核糖體令佢停工 — 人體核糖體結構唔同，所以唔受影響。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>核糖體由大亞基＋細亞基組成（好似漢堡包），模型畫成實心波子，結構細節全冇。'
+  },
+  vacuole: {
+    name: '液泡', en: 'Vacuole', color: 0x81d4fa,
+    type: 'STORAGE',
+    size: '🔍 動物：細小（<1 μm）· 植物：可佔細胞 90%',
+    desc: '細胞嘅「儲物櫃」— 裝水、離子、養分、廢物。動物細胞通常細小又多個；植物細胞巨大，靠膨壓撐起形狀。',
+    fact: '💡 冷知識：西瓜「沙沙地」口感就係液泡爆開釋放糖分！',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>動物細胞液泡通常細到幾乎睇唔到，模型畫大咗好多倍先至喺 3D 見到。'
+  },
+  centriole: {
+    name: '中心體', en: 'Centrioles', color: 0xba68c8,
+    type: 'CELL DIVISION',
+    size: '🔍 約 0.2 × 0.4 μm',
+    desc: '細胞分裂嘅「指揮官」— 兩枝互相垂直嘅微管小筒。分裂時移到兩端，射出紡錘絲，準確分開染色體。',
+    fact: '💡 冷知識：植物細胞冇中心體一樣可以分裂 — 所以佢係「輔助」唔係「必需」。',
+    wrong: '<b>⚠️ 呢個模型邊度唔準：</b>真實中心體由 9 組三聯微管排成車輪狀（9×3 結構），模型簡化成 9 條單管。'
+  }
+};
+
+// ============ 建立細胞 ============
+const cellGroup = new THREE.Group();
+scene.add(cellGroup);
+
+// --- 細胞膜 ---
+const membraneMat = new THREE.MeshPhongMaterial({
+  color: 0x7ec8e3, transparent: true, opacity: 0.13,
+  side: THREE.DoubleSide, shininess: 30, clippingPlanes: [clipPlane]
+});
+const membrane = new THREE.Mesh(new THREE.SphereGeometry(CELL_R, 64, 64), membraneMat);
+membrane.userData.key = 'membrane';
+cellGroup.add(membrane);
+clickables.push(membrane);
+
+// 膜線框
+cellGroup.add(new THREE.Mesh(new THREE.SphereGeometry(CELL_R*0.995, 32, 32),
+  new THREE.MeshBasicMaterial({ color: 0x4fc3f7, wireframe: true, transparent: true, opacity: 0.05 })));
+
+// --- 肌動蛋白皮層（膜內側螺旋網）---
+const cortexGroup = new THREE.Group();
+(function(){
+  const mat = new THREE.LineBasicMaterial({ color: 0x9ad8a8, transparent: true, opacity: 0.4 });
+  for (let i = 0; i < 24; i++) {
+    const phi = Math.acos(2*(i/24) - 1);
+    const theta = i * 2.39996; // golden angle
+    const pts = [];
+    for (let j = 0; j < 20; j++) {
+      const t = j / 19;
+      const lat = phi + t * 0.5;
+      const lon = theta + t * 0.8;
+      const r = CELL_R * 0.97;
+      pts.push(new THREE.Vector3(r*Math.sin(lat)*Math.cos(lon), r*Math.sin(lat)*Math.sin(lon), r*Math.cos(lat)));
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    cortexGroup.add(new THREE.Line(geo, mat));
+  }
+})();
+cortexGroup.userData.key = 'cortex';
+cellGroup.add(cortexGroup);
+clickables.push(cortexGroup);
+
+// --- 細胞質微粒 ---
+(function(){
+  const geo = new THREE.BufferGeometry();
+  const n = 800, pos = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    const r = CELL_R * Math.cbrt(Math.random()) * 0.92;
+    const theta = Math.random()*Math.PI*2;
+    const phi = Math.acos(2*Math.random()-1);
+    pos[i*3] = r*Math.sin(phi)*Math.cos(theta);
+    pos[i*3+1] = r*Math.sin(phi)*Math.sin(theta);
+    pos[i*3+2] = r*Math.cos(phi);
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  cellGroup.add(new THREE.Points(geo, new THREE.PointsMaterial({color:0xaaccff,size:0.06,transparent:true,opacity:0.5})));
+})();
+
+// --- 細胞核 ---
+const nucleus = new THREE.Mesh(
+  new THREE.SphereGeometry(3.2, 48, 48),
+  new THREE.MeshPhongMaterial({ color: 0x7e57c2, shininess: 40, transparent: true, opacity: 0.92 })
+);
+nucleus.position.set(-1.5, 0.5, 0);
+nucleus.userData.key = 'nucleus';
+cellGroup.add(nucleus);
+clickables.push(nucleus);
+
+// 核膜
+nucleus.add(new THREE.Mesh(new THREE.SphereGeometry(3.4, 32, 32),
+  new THREE.MeshPhongMaterial({ color: 0x9575cd, transparent: true, opacity: 0.15, side: THREE.DoubleSide })));
+
+// 核孔複合物（核膜上嘅小環）
+(function(){
+  const poreMat = new THREE.MeshPhongMaterial({ color: 0xc5b8e8, transparent: true, opacity: 0.9 });
+  for (let i = 0; i < 40; i++) {
+    const phi = Math.acos(2*Math.random()-1);
+    const theta = Math.random()*Math.PI*2;
+    const r = 3.35;
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.14, 0.045, 6, 10), poreMat);
+    ring.position.set(r*Math.sin(phi)*Math.cos(theta), r*Math.sin(phi)*Math.sin(theta), r*Math.cos(phi));
+    ring.lookAt(0,0,0);
+    nucleus.add(ring);
+  }
+})();
+
+// 染色質
+(function(){
+  const geo = new THREE.BufferGeometry();
+  const n = 250, pos = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    const r = 2.6 * Math.cbrt(Math.random());
+    const theta = Math.random()*Math.PI*2;
+    const phi = Math.acos(2*Math.random()-1);
+    pos[i*3] = r*Math.sin(phi)*Math.cos(theta);
+    pos[i*3+1] = r*Math.sin(phi)*Math.sin(theta);
+    pos[i*3+2] = r*Math.cos(phi);
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  nucleus.add(new THREE.Points(geo, new THREE.PointsMaterial({color:0xc5b8e8,size:0.09,transparent:true,opacity:0.7})));
+})();
+
+// --- 核仁 ---
+const nucleolus = new THREE.Mesh(
+  new THREE.SphereGeometry(1.1, 24, 24),
+  new THREE.MeshPhongMaterial({ color: 0x9575cd, shininess: 60 })
+);
+nucleolus.position.set(0.6, -0.3, 0.8);
+nucleolus.userData.key = 'nucleolus';
+nucleus.add(nucleolus);
+clickables.push(nucleolus);
+
+// --- 粒線體 ×2 ---
+function makeMito(pos, rotY, rotZ, scale) {
+  const group = new THREE.Group();
+  const outer = new THREE.Mesh(
+    new THREE.SphereGeometry(1.4, 32, 32),
+    new THREE.MeshPhongMaterial({ color: 0xe57373, shininess: 40 })
+  );
+  outer.scale.set(1, 0.6, 0.7);
+  group.add(outer);
+  const cristaeMat = new THREE.MeshPhongMaterial({ color: 0xef9a9a, transparent: true, opacity: 0.5 });
+  for (let i = -2; i <= 2; i++) {
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.08, 24), cristaeMat);
+    disc.rotation.x = Math.PI/2;
+    disc.position.x = i * 0.55;
+    group.add(disc);
+  }
+  group.position.copy(pos);
+  group.rotation.y = rotY;
+  group.rotation.z = rotZ;
+  if (scale) group.scale.setScalar(scale);
+  group.userData.key = 'mito1';
+  cellGroup.add(group);
+  clickables.push(group);
+  return group;
+}
+const mito1 = makeMito(new THREE.Vector3(4.2, 2.5, 1.5), 0.5, 0.3, 1);
+const mito2 = makeMito(new THREE.Vector3(-4.5, -2.2, -1), 2.2, -0.4, 0.8);
+
+// --- 內質網（粗面＋滑面混合）---
+const erGroup = new THREE.Group();
+const erMat = new THREE.MeshPhongMaterial({ color: 0xf06292, transparent: true, opacity: 0.75, shininess: 25 });
+const erMat2 = new THREE.MeshPhongMaterial({ color: 0x4db6ac, transparent: true, opacity: 0.65, shininess: 25 });
+const erCurve = [[3.2, 1.8, -1.5], [4.2, 2.2, -0.5], [4.8, 1.8, 0.8], [4.5, 0.8, 1.8]];
+for (let i = 0; i < erCurve.length; i++) {
+  const p = erCurve[i];
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.18, 20), i < 3 ? erMat : erMat2);
+  disc.position.set(p[0], p[1], p[2]);
+  disc.rotation.z = 0.5;
+  disc.rotation.y = i * 0.4;
+  erGroup.add(disc);
+  if (i < 3) {
+    const riboMat = new THREE.MeshPhongMaterial({ color: 0xa1887f });
+    for (let r = 0; r < 14; r++) {
+      const rr = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), riboMat);
+      const a = (r / 14) * Math.PI * 2;
+      rr.position.set(Math.cos(a) * 1.0, 0.22 + Math.sin(a*3)*0.08, Math.sin(a) * 1.0);
+      disc.add(rr);
+    }
+  }
+}
+erGroup.userData.key = 'er';
+cellGroup.add(erGroup);
+clickables.push(erGroup);
+
+// --- 高爾基體 ---
+const golgiGroup = new THREE.Group();
+const golgiMat = new THREE.MeshPhongMaterial({ color: 0xffb74d, transparent: true, opacity: 0.85, shininess: 30 });
+for (let i = 0; i < 5; i++) {
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(1.6 - i*0.15, 1.6 - i*0.15, 0.14, 28), golgiMat);
+  disc.position.set(3.8, -1.5 + i*0.5, 2.2);
+  disc.rotation.z = 0.15;
+  disc.rotation.x = 0.1;
+  golgiGroup.add(disc);
+}
+golgiGroup.userData.key = 'golgi';
+cellGroup.add(golgiGroup);
+clickables.push(golgiGroup);
+
+// --- 運輸囊泡 ---
+const vesicleGroup = new THREE.Group();
+const vesMat = new THREE.MeshPhongMaterial({ color: 0xffd54f, transparent: true, opacity: 0.85, shininess: 40 });
+const vesPos = [[4.1, -0.2, 2.5], [3.6, 0.9, 2.7], [4.5, -2.0, 1.9], [3.3, 1.8, 2.0]];
+vesPos.forEach(p => {
+  const v = new THREE.Mesh(new THREE.SphereGeometry(0.32, 14, 14), vesMat);
+  v.position.set(p[0], p[1], p[2]);
+  vesicleGroup.add(v);
+});
+vesicleGroup.userData.key = 'vesicle';
+cellGroup.add(vesicleGroup);
+clickables.push(vesicleGroup);
+
+// --- 溶酶體 ×3 ---
+const lysMat = new THREE.MeshPhongMaterial({ color: 0xff8a65, shininess: 50 });
+const lysPos = [[-2.8, -3.0, 2.0], [1.5, -3.5, -1.8], [5.2, -2.8, -2.5]];
+lysPos.forEach(p => {
+  const ly = new THREE.Mesh(new THREE.SphereGeometry(0.7, 20, 20), lysMat);
+  ly.position.set(p[0], p[1], p[2]);
+  ly.userData.key = 'lysosome';
+  cellGroup.add(ly);
+  clickables.push(ly);
+});
+
+// --- 游離核糖體 ---
+const riboGroup = new THREE.Group();
+const riboMat = new THREE.MeshPhongMaterial({ color: 0xa1887f });
+for (let i = 0; i < 60; i++) {
+  const r = CELL_R * Math.cbrt(Math.random()) * 0.88;
+  const theta = Math.random()*Math.PI*2;
+  const phi = Math.acos(2*Math.random()-1);
+  const x = r*Math.sin(phi)*Math.cos(theta);
+  const y = r*Math.sin(phi)*Math.sin(theta);
+  const z = r*Math.cos(phi);
+  if (Math.sqrt((x+1.5)**2 + (y-0.5)**2 + z**2) < 4) continue;
+  const rb = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 8), riboMat);
+  rb.position.set(x, y, z);
+  riboGroup.add(rb);
+}
+riboGroup.userData.key = 'ribosome';
+cellGroup.add(riboGroup);
+clickables.push(riboGroup);
+
+// --- 液泡 ---
+const vacuole = new THREE.Mesh(
+  new THREE.SphereGeometry(1.5, 24, 24),
+  new THREE.MeshPhongMaterial({ color: 0x81d4fa, transparent: true, opacity: 0.5, shininess: 40 })
+);
+vacuole.position.set(-5.0, 2.8, -2.2);
+vacuole.userData.key = 'vacuole';
+cellGroup.add(vacuole);
+clickables.push(vacuole);
+
+// --- 中心體 ---
+const centrioleGroup = new THREE.Group();
+const centMat = new THREE.MeshPhongMaterial({ color: 0xba68c8, shininess: 30 });
+function makeCentTube() {
+  const g = new THREE.Group();
+  const n = 9;
+  for (let i = 0; i < n; i++) {
+    const a = (i/n) * Math.PI * 2;
+    const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.9, 8), centMat);
+    tube.position.set(Math.cos(a)*0.22, 0, Math.sin(a)*0.22);
+    g.add(tube);
+  }
+  return g;
+}
+const c1 = makeCentTube();
+c1.position.set(-0.5, 0.5, 3.5);
+centrioleGroup.add(c1);
+const c2 = makeCentTube();
+c2.rotation.z = Math.PI/2;
+c2.position.set(-0.5, 0.5, 3.5);
+centrioleGroup.add(c2);
+centrioleGroup.userData.key = 'centriole';
+cellGroup.add(centrioleGroup);
+clickables.push(centrioleGroup);
+
+// ============ Layer 控制 ============
+const layerGroups = {
+  membrane: [membrane],
+  cortex: [cortexGroup],
+  nucleus: [nucleus],
+  nucleolus: [nucleolus],
+  er: [erGroup],
+  golgi: [golgiGroup],
+  vesicle: [vesicleGroup],
+  lysosome: clickables.filter(c => c.userData.key === 'lysosome'),
+  mito1: [mito1, mito2],
+  ribosome: [riboGroup],
+  vacuole: [vacuole],
+  centriole: [centrioleGroup]
+};
+
+document.querySelectorAll('#sidebar .row').forEach(row => {
+  const key = row.dataset.key;
+  const toggle = row.querySelector('.toggle');
+  toggle.addEventListener('click', e => {
+    e.stopPropagation();
+    const on = !toggle.classList.contains('on');
+    toggle.classList.toggle('on', on);
+    row.classList.toggle('hidden', !on);
+    (layerGroups[key] || []).forEach(g => g.visible = on);
+  });
+  row.addEventListener('click', () => {
+    const on = !toggle.classList.contains('on');
+    toggle.classList.toggle('on', on);
+    row.classList.toggle('hidden', !on);
+    (layerGroups[key] || []).forEach(g => g.visible = on);
+    // 同時聚焦
+    const target = layerGroups[key] ? layerGroups[key][0] : null;
+    if (target && target !== membrane) select(target);
+    else if (key === 'membrane') select(membrane);
+  });
+});
+document.getElementById('allBtn').addEventListener('click', () => {
+  document.querySelectorAll('#sidebar .row').forEach(row => {
+    const key = row.dataset.key;
+    row.querySelector('.toggle').classList.add('on');
+    row.classList.remove('hidden');
+    (layerGroups[key] || []).forEach(g => g.visible = true);
+  });
+});
+document.getElementById('noneBtn').addEventListener('click', () => {
+  document.querySelectorAll('#sidebar .row').forEach(row => {
+    const key = row.dataset.key;
+    row.querySelector('.toggle').classList.remove('on');
+    row.classList.add('hidden');
+    (layerGroups[key] || []).forEach(g => g.visible = false);
+  });
+});
+
+// ============ 切割 ============
+function updateCut() {
+  const constant = -CELL_R + cutAmount * (CELL_R * 2 + 2);
+  clipPlane.constant = constant;
+  document.getElementById('cutVal').textContent = Math.round(cutAmount*100) + '%';
+  document.getElementById('cutBadge').style.display = cutAmount > 0.01 ? 'block' : 'none';
+}
+document.getElementById('cutSlider').addEventListener('input', e => {
+  cutAmount = parseInt(e.target.value) / 100;
+  updateCut();
+});
+
+// ============ 互動 ============
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let hovered = null;
+let focused = null;
+
+function getTopObj(obj) {
+  let o = obj;
+  while (o && !o.userData.key) o = o.parent;
+  return o && o.userData.key ? o : null;
+}
+
+// Tooltip
+const tooltip = document.getElementById('tooltip');
+function showTooltip(key, x, y) {
+  const info = INFO[key];
+  if (!info) return;
+  document.getElementById('ttName').textContent = info.name;
+  document.getElementById('ttSize').textContent = info.size.replace('🔍 ', '');
+  tooltip.style.display = 'block';
+  tooltip.style.left = (x + 16) + 'px';
+  tooltip.style.top = (y + 16) + 'px';
+}
+function hideTooltip() { tooltip.style.display = 'none'; }
+
+renderer.domElement.addEventListener('mousemove', e => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(clickables, true);
+  const top = hits.length ? getTopObj(hits[0].object) : null;
+  if (top !== hovered) {
+    if (hovered) { highlight(hovered, false); hideTooltip(); }
+    hovered = top;
+    if (hovered) { highlight(hovered, true); showTooltip(hovered.userData.key, e.clientX, e.clientY); }
+  } else if (top) {
+    tooltip.style.left = (e.clientX + 16) + 'px';
+    tooltip.style.top = (e.clientY + 16) + 'px';
+  }
+  renderer.domElement.style.cursor = top ? 'pointer' : 'grab';
+});
+renderer.domElement.addEventListener('mouseleave', () => {
+  if (hovered) { highlight(hovered, false); hovered = null; }
+  hideTooltip();
+});
+
+renderer.domElement.addEventListener('click', e => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(clickables, true);
+  if (hits.length) {
+    const top = getTopObj(hits[0].object);
+    if (top) select(top);
+  }
+});
+
+function highlight(obj, on) {
+  obj.traverse(ch => {
+    if (ch.isMesh && ch.material) {
+      if (Array.isArray(ch.material)) ch.material.forEach(m => { if (m.emissive) m.emissive.setHex(on ? 0x224466 : 0x000000); });
+      else if (ch.material.emissive) ch.material.emissive.setHex(on ? 0x224466 : 0x000000);
+    }
+  });
+}
+
+function select(obj) {
+  const key = obj.userData.key;
+  const info = INFO[key];
+  if (!info) return;
+  document.querySelectorAll('#sidebar .row').forEach(r => r.classList.toggle('active', r.dataset.key === key));
+  document.getElementById('infoPanel').style.display = 'block';
+  document.getElementById('pName').textContent = info.name;
+  document.getElementById('pType').textContent = info.en.toUpperCase();
+  document.getElementById('pSize').textContent = info.size;
+  document.getElementById('pDesc').textContent = info.desc;
+  document.getElementById('pFact').textContent = info.fact;
+  document.getElementById('pWrong').innerHTML = info.wrong;
+  focused = obj;
+}
+
+// 自動旋轉
+let autoSpin = true;
+document.getElementById('autoSpin').addEventListener('click', function(){
+  autoSpin = !autoSpin;
+  this.classList.toggle('active', autoSpin);
+  this.textContent = autoSpin ? '⟳ 自動' : '⏸ 停';
+});
+
+// ============ 動畫 ============
+let time = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.016;
+  if (autoSpin && !focused) cellGroup.rotation.y += 0.003;
+  mito1.position.y = 2.5 + Math.sin(time*0.8)*0.2;
+  mito2.position.y = -2.2 + Math.cos(time*0.7)*0.2;
+  vacuole.position.y = 2.8 + Math.sin(time*0.6+1)*0.15;
+  if (hovered && !focused) hovered.scale.setScalar(1.04 + Math.sin(time*5)*0.02);
+  if (focused) {
+    const pos = focused.position.clone();
+    if (pos.length() > 0.1) controls.target.lerp(pos, 0.06);
+  }
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
