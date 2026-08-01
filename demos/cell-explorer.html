@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>細胞探索器 — Animal Cell Explorer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; overflow: hidden; font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; color: #fff; }
+  canvas { display: block; }
+
+  #title { position: fixed; top: 16px; left: 20px; z-index: 10; pointer-events: none; }
+  #title h1 { font-size: 20px; font-weight: 700; letter-spacing: 1px; }
+  #title p { font-size: 11px; color: #8ab; letter-spacing: 2px; margin-top: 2px; }
+
+  /* 切割控制 */
+  #cutPanel {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10;
+    background: rgba(10,15,30,.8); border: 1px solid rgba(100,160,255,.25);
+    border-radius: 20px; padding: 8px 18px; display: flex; align-items: center; gap: 12px;
+    backdrop-filter: blur(4px);
+  }
+  #cutPanel .label { font-size: 12px; color: #9ab; }
+  #cutPanel input[type=range] { width: 140px; accent-color: #4fc3f7; }
+  #cutPanel .val { font-size: 11px; color: #4fc3f7; font-family: Consolas, monospace; min-width: 34px; text-align: center; }
+  #autoSpin { background: rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.2); border-radius: 14px; padding: 3px 10px; font-size: 11px; cursor: pointer; }
+  #autoSpin.active { background: #4fc3f7; color: #000; border-color: #4fc3f7; font-weight: 700; }
+
+  /* 左側細胞器清單 */
+  #sidebar {
+    position: fixed; top: 70px; left: 20px; z-index: 10; width: 190px;
+    background: rgba(10,15,30,.78); border: 1px solid rgba(100,160,255,.2);
+    border-radius: 12px; padding: 10px; backdrop-filter: blur(4px);
+    max-height: calc(100vh - 140px); overflow-y: auto;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+  #sidebar .shead { font-size: 10px; color: #789; letter-spacing: 2px; padding: 2px 8px 8px; }
+  #sidebar .row {
+    display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 7px;
+    cursor: pointer; font-size: 13px; transition: all .15s; border: 1px solid transparent;
+  }
+  #sidebar .row:hover { background: rgba(255,255,255,.07); }
+  #sidebar .row.active { background: rgba(79,195,247,.15); border-color: rgba(79,195,247,.5); }
+  #sidebar .dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+  #sidebar .en { font-size: 10px; color: #789; margin-left: auto; }
+
+  /* 資訊面板 */
+  #infoPanel {
+    position: fixed; top: 70px; right: 20px; z-index: 10; width: 280px;
+    background: rgba(10,15,30,.85); border: 1px solid rgba(100,160,255,.25);
+    border-radius: 12px; padding: 16px; backdrop-filter: blur(6px);
+    display: none; max-height: calc(100vh - 140px); overflow-y: auto;
+  }
+  #infoPanel h2 { font-size: 18px; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
+  #infoPanel .type { font-size: 10px; color: #4fc3f7; letter-spacing: 2px; margin-bottom: 12px; }
+  #infoPanel .desc { font-size: 13px; line-height: 1.7; color: #dde; margin-bottom: 12px; }
+  #infoPanel .fact {
+    background: rgba(79,195,247,.08); border-left: 3px solid #4fc3f7;
+    padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: 12px; color: #9cf; line-height: 1.6;
+  }
+  #infoPanel .stat { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(255,255,255,.06); font-size:12px; }
+  #infoPanel .stat span:last-child { color:#bbb; }
+
+  #hint {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 10;
+    font-size: 11px; color: #779; background: rgba(10,15,30,.6);
+    padding: 6px 16px; border-radius: 16px; pointer-events: none;
+  }
+  #hint b { color: #aac; }
+
+  /* 剖面截面指示 */
+  #cutBadge {
+    position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 10;
+    font-size: 10px; color: #4fc3f7; background: rgba(10,15,30,.6);
+    padding: 3px 12px; border-radius: 10px; display: none; letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div id="title">
+  <h1>🔬 細胞探索器</h1>
+  <p>ANIMAL CELL EXPLORER · INTERACTIVE 3D</p>
+</div>
+
+<div id="cutPanel">
+  <span class="label">🔪 剖面</span>
+  <input type="range" id="cutSlider" min="0" max="100" value="0">
+  <span class="val" id="cutVal">0%</span>
+  <button id="autoSpin" class="active">⟳ 自動旋轉</button>
+</div>
+<div id="cutBadge">✂ 剖面模式 — 拖動滑桿切開細胞</div>
+
+<div id="sidebar">
+  <div class="shead">細胞器 ORGANELLES</div>
+  <div class="row" data-key="membrane"><span class="dot" style="background:#7ec8e3"></span>細胞膜<span class="en">Membrane</span></div>
+  <div class="row" data-key="nucleus"><span class="dot" style="background:#7e57c2"></span>細胞核<span class="en">Nucleus</span></div>
+  <div class="row" data-key="nucleolus"><span class="dot" style="background:#9575cd"></span>核仁<span class="en">Nucleolus</span></div>
+  <div class="row" data-key="mito1"><span class="dot" style="background:#e57373"></span>粒線體<span class="en">Mitochondria</span></div>
+  <div class="row" data-key="er"><span class="dot" style="background:#4db6ac"></span>內質網<span class="en">Endoplasmic Reticulum</span></div>
+  <div class="row" data-key="golgi"><span class="dot" style="background:#ffb74d"></span>高爾基體<span class="en">Golgi Apparatus</span></div>
+  <div class="row" data-key="lysosome"><span class="dot" style="background:#ff8a65"></span>溶酶體<span class="en">Lysosome</span></div>
+  <div class="row" data-key="ribosome"><span class="dot" style="background:#a1887f"></span>核糖體<span class="en">Ribosome</span></div>
+  <div class="row" data-key="vacuole"><span class="dot" style="background:#81d4fa"></span>液泡<span class="en">Vacuole</span></div>
+  <div class="row" data-key="centriole"><span class="dot" style="background:#ba68c8"></span>中心體<span class="en">Centrioles</span></div>
+</div>
+
+<div id="infoPanel">
+  <h2 id="pName">粒線體</h2>
+  <div class="type" id="pType">MITOCHONDRION</div>
+  <div class="desc" id="pDesc"></div>
+  <div class="fact" id="pFact"></div>
+  <div style="height:10px"></div>
+  <div class="stat"><span>尺寸</span><span id="pSize"></span></div>
+  <div class="stat"><span>數量／細胞</span><span id="pCount"></span></div>
+  <div class="stat"><span>位置</span><span id="pLoc"></span></div>
+</div>
+
+<div id="hint"><b>DRAG</b> 旋轉 &nbsp;·&nbsp; <b>SCROLL</b> 縮放 &nbsp;·&nbsp; <b>CLICK</b> 細胞器查看知識 &nbsp;·&nbsp; 拖動上方滑桿<b>切開細胞</b></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// ============ 場景 ============
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(0, 6, 30);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 12;
+controls.maxDistance = 80;
+
+// 星空背景
+(function(){
+  const geo = new THREE.BufferGeometry();
+  const n = 3000, pos = new Float32Array(n*3);
+  for (let i=0;i<n*3;i++) pos[i] = (Math.random()-0.5)*600;
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({color:0x8899bb,size:0.5,transparent:true,opacity:0.5})));
+})();
+
+// 燈光
+const ambient = new THREE.AmbientLight(0x8899cc, 0.5);
+scene.add(ambient);
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+keyLight.position.set(10, 15, 12);
+scene.add(keyLight);
+const rimLight = new THREE.DirectionalLight(0x4fc3f7, 0.5);
+rimLight.position.set(-8, -5, -10);
+scene.add(rimLight);
+const innerLight = new THREE.PointLight(0xffffff, 0.4, 40);
+innerLight.position.set(2, 2, 4);
+scene.add(innerLight);
+
+// ============ 切割平面 ============
+const CELL_R = 9;
+const clipPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);
+let cutAmount = 0; // 0-1
+
+// 所有可點擊物體
+const clickables = [];
+
+// ============ 細胞器知識庫 ============
+const INFO = {
+  membrane: {
+    name: '細胞膜', en: 'Cell Membrane', color: 0x7ec8e3,
+    type: 'PLASMA MEMBRANE',
+    desc: '細胞最外層嘅保護罩，由磷脂雙層同蛋白質組成。佢好似一個「守門員」，控制咩物質可以進出細胞 — 氧氣、養分可以入嚟，廢物、分泌物可以出去，但有害物質就擋住。',
+    fact: '💡 冷知識：細胞膜具有「選擇性通透」— 水可以自由通過，但大分子就要靠專用通道蛋白。呢個特性令細胞可以維持內部環境穩定（恆定狀態）。',
+    size: '約 7-10 nm 厚', count: '1 層（包住成個細胞）', loc: '細胞最外層'
+  },
+  nucleus: {
+    name: '細胞核', en: 'Nucleus', color: 0x7e57c2,
+    type: 'CONTROL CENTER',
+    desc: '細胞嘅「大腦」同指揮中心。入面裝住 DNA（染色質），即係你嘅遺傳密碼。所有細胞活動 — 分裂、生長、蛋白質製造 — 都係由佢發號施令。核膜上面有核孔，畀 RNA 同蛋白質出入。',
+    fact: '💡 冷知識：如果將細胞核拎走，細胞冇幾耐就會死亡 — 因為佢失去所有指令。但紅血球例外，佢哋成熟後會主動丟棄細胞核，換取更多空間裝血紅素。',
+    size: '約 5-10 μm 直徑', count: '1 個（多數細胞）', loc: '細胞中央偏一側'
+  },
+  nucleolus: {
+    name: '核仁', en: 'Nucleolus', color: 0x9575cd,
+    type: 'RIBOSOME FACTORY',
+    desc: '細胞核入面嘅深色小圓體，係「核糖體工廠」。佢嘅唯一任務就係製造核糖體 RNA（rRNA），再同蛋白質組裝成核糖體，然後送出細胞核去製造蛋白質。',
+    fact: '💡 冷知識：核仁喺細胞分裂時會暫時消失，分裂完又會重新出現。蛋白質需求大嘅細胞（例如癌細胞）通常有特別大嘅核仁。',
+    size: '約 1-2 μm', count: '1-4 個', loc: '細胞核內部'
+  },
+  mito1: {
+    name: '粒線體', en: 'Mitochondria', color: 0xe57373,
+    type: 'POWERHOUSE',
+    desc: '細胞嘅「發電廠」。佢將葡萄糖同氧氣通過細胞呼吸轉化為 ATP（細胞嘅能量貨幣）。內膜摺疊成好多嵴（cristae），好似散熱片咁增加表面積，令能量生產效率最大化。',
+    fact: '💡 冷知識：粒線體有自己嘅 DNA，同細菌嘅 DNA 好似！科學家認為粒線體係遠古時期被細胞吞噬嘅細菌演化而成（內共生學說）。你嘅粒線體 DNA 只由媽媽遺傳。',
+    size: '約 1-10 μm 長', count: '100-2000 個（視乎細胞）', loc: '細胞質各處，能量需求高處特別多'
+  },
+  er: {
+    name: '內質網', en: 'Endoplasmic Reticulum', color: 0x4db6ac,
+    type: 'PROTEIN & LIPID FACTORY',
+    desc: '細胞核附近嘅膜狀迷宮，分兩種：粗面內質網（表面佈滿核糖體，負責製造蛋白質）同滑面內質網（冇核糖體，負責製造脂質同解毒）。佢係細胞內嘅「高速公路」，將製造好嘅物質運送去高爾基體。',
+    fact: '💡 冷知識：肝細胞有大量滑面內質網 — 因為佢哋要不停解毒（分解藥物同酒精）。飲酒會令肝細胞嘅滑面內質網增生！',
+    size: '佔細胞膜系統約 50%', count: '1 個連續網絡', loc: '圍繞細胞核'
+  },
+  golgi: {
+    name: '高爾基體', en: 'Golgi Apparatus', color: 0xffb74d,
+    type: 'PACKAGING & SHIPPING',
+    desc: '細胞嘅「郵局」同「加工廠」。內質網送嚟嘅蛋白質同脂質，喺呢度進行最後加工 — 修飾、分類、包裝成囊泡，然後送去正確目的地（細胞膜分泌、溶酶體、或者細胞其他位置）。',
+    fact: '💡 冷知識：高爾基體係意大利科學家 Camillo Golgi 喺 1898 年發現，佢用銀染法將佢染出嚟。佢後來因為神經系統研究獲得諾貝爾獎。',
+    size: '約 3-5 μm', count: '1 個（通常）', loc: '細胞核旁邊'
+  },
+  lysosome: {
+    name: '溶酶體', en: 'Lysosome', color: 0xff8a65,
+    type: 'RECYCLING & DEFENSE',
+    desc: '細胞嘅「垃圾處理站」同「回收廠」。入面裝滿強力消化酶，可以分解廢物、老化嘅細胞器、甚至入侵嘅細菌。佢仲負責細胞自噬（autophagy）— 回收冇用嘅部件循環再用。',
+    fact: '💡 冷知識：溶酶體嘅消化酶咁勁，如果全部漏晒出嚟，會成個細胞自我消化！呢個過程叫「細胞凋亡」（programmed cell death），係身體正常清理細胞嘅機制。',
+    size: '約 0.1-1.2 μm', count: '數十至數百個', loc: '散佈細胞質'
+  },
+  ribosome: {
+    name: '核糖體', en: 'Ribosome', color: 0xa1887f,
+    type: 'PROTEIN SYNTHESIS',
+    desc: '細胞嘅「蛋白質製造機器」。佢讀取 mRNA 上面嘅遺傳密碼，將氨基酸一個一個串起嚟，組裝成蛋白質鏈。可以自由漂浮喺細胞質，或者依附喺粗面內質網表面。',
+    fact: '💡 冷知識：抗生素好多時就係針對細菌嘅核糖體 — 例如紅黴素會黐住細菌核糖體，令佢製造唔到蛋白質，細菌就死。人體核糖體結構唔同，所以唔受影響！',
+    size: '約 20-30 nm', count: '幾百萬個！', loc: '細胞質＋粗面內質網表面'
+  },
+  vacuole: {
+    name: '液泡', en: 'Vacuole', color: 0x81d4fa,
+    type: 'STORAGE',
+    desc: '細胞嘅「儲物櫃」，裝住水、離子、養分同廢物。動物細胞嘅液泡通常細小又多個；植物細胞嘅液泡巨大（佔細胞 90% 體積），仲要負責撐起細胞形狀（膨壓）。',
+    fact: '💡 冷知識：你食嘅西瓜「沙沙地」嘅口感，就係液泡爆開釋放糖分嘅結果！植物液泡入面仲可以儲存色素（花青素）同毒素（保護自己）。',
+    size: '動物：細小；植物：可佔 90%', count: '動物：多個細小', loc: '散佈細胞質'
+  },
+  centriole: {
+    name: '中心體', en: 'Centrioles', color: 0xba68c8,
+    type: 'CELL DIVISION',
+    desc: '細胞分裂嘅「指揮官」。由兩枝互相垂直嘅小筒組成（微管結構）。細胞分裂時，中心體會移到細胞兩端，射出紡錘絲，將染色體準確分開拉向兩邊。',
+    fact: '💡 冷知識：中心體只喺動物細胞先有 — 植物細胞冇中心體，但佢哋一樣可以正常分裂！所以中心體係「輔助」而唔係「必需」。',
+    size: '約 0.2 μm × 0.4 μm', count: '1 對（分裂時變 2 對）', loc: '細胞核附近'
+  }
+};
+
+// ============ 建立細胞 ============
+const cellGroup = new THREE.Group();
+scene.add(cellGroup);
+
+// --- 細胞膜（半透明外殼）---
+const membraneMat = new THREE.MeshPhongMaterial({
+  color: 0x7ec8e3, transparent: true, opacity: 0.13,
+  side: THREE.DoubleSide, shininess: 30,
+  clippingPlanes: [clipPlane]
+});
+const membrane = new THREE.Mesh(new THREE.SphereGeometry(CELL_R, 64, 64), membraneMat);
+membrane.userData.key = 'membrane';
+cellGroup.add(membrane);
+clickables.push(membrane);
+
+// 細胞膜外框線（增加質感）
+const wireMat = new THREE.MeshBasicMaterial({
+  color: 0x4fc3f7, wireframe: true, transparent: true, opacity: 0.06
+});
+const wireSphere = new THREE.Mesh(new THREE.SphereGeometry(CELL_R * 0.995, 32, 32), wireMat);
+cellGroup.add(wireSphere);
+
+// --- 細胞質微粒（懸浮粒子）---
+(function(){
+  const geo = new THREE.BufferGeometry();
+  const n = 800, pos = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    const r = CELL_R * Math.cbrt(Math.random()) * 0.92;
+    const theta = Math.random()*Math.PI*2;
+    const phi = Math.acos(2*Math.random()-1);
+    pos[i*3] = r*Math.sin(phi)*Math.cos(theta);
+    pos[i*3+1] = r*Math.sin(phi)*Math.sin(theta);
+    pos[i*3+2] = r*Math.cos(phi);
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  cellGroup.add(new THREE.Points(geo, new THREE.PointsMaterial({color:0xaaccff,size:0.06,transparent:true,opacity:0.5})));
+})();
+
+// --- 細胞核 ---
+const nucleus = new THREE.Mesh(
+  new THREE.SphereGeometry(3.2, 48, 48),
+  new THREE.MeshPhongMaterial({ color: 0x7e57c2, shininess: 40, transparent: true, opacity: 0.92 })
+);
+nucleus.position.set(-1.5, 0.5, 0);
+nucleus.userData.key = 'nucleus';
+cellGroup.add(nucleus);
+clickables.push(nucleus);
+
+// 核膜（雙層膜效果）
+const nuclearEnv = new THREE.Mesh(
+  new THREE.SphereGeometry(3.4, 32, 32),
+  new THREE.MeshPhongMaterial({ color: 0x9575cd, transparent: true, opacity: 0.15, side: THREE.DoubleSide })
+);
+nucleus.add(nuclearEnv);
+
+// --- 核仁 ---
+const nucleolus = new THREE.Mesh(
+  new THREE.SphereGeometry(1.1, 24, 24),
+  new THREE.MeshPhongMaterial({ color: 0x9575cd, shininess: 60 })
+);
+nucleolus.position.set(0.6, -0.3, 0.8);
+nucleolus.userData.key = 'nucleolus';
+nucleus.add(nucleolus);
+clickables.push(nucleolus);
+
+// 染色質（核內細絲）
+(function(){
+  const geo = new THREE.BufferGeometry();
+  const n = 200, pos = new Float32Array(n*3);
+  for (let i=0;i<n;i++){
+    const r = 2.6 * Math.cbrt(Math.random());
+    const theta = Math.random()*Math.PI*2;
+    const phi = Math.acos(2*Math.random()-1);
+    pos[i*3] = r*Math.sin(phi)*Math.cos(theta);
+    pos[i*3+1] = r*Math.sin(phi)*Math.sin(theta);
+    pos[i*3+2] = r*Math.cos(phi);
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  nucleus.add(new THREE.Points(geo, new THREE.PointsMaterial({color:0xc5b8e8,size:0.09,transparent:true,opacity:0.7})));
+})();
+
+// --- 粒線體（兩個，唔同角度）---
+function makeMito(pos, rotY, rotZ, key, scale) {
+  const group = new THREE.Group();
+  // 外膜（橢圓體）
+  const outer = new THREE.Mesh(
+    new THREE.SphereGeometry(1.4, 32, 32),
+    new THREE.MeshPhongMaterial({ color: 0xe57373, shininess: 40 })
+  );
+  outer.scale.set(1, 0.6, 0.7);
+  group.add(outer);
+  // 嵴（cristae — 內膜摺疊）
+  const cristaeMat = new THREE.MeshPhongMaterial({ color: 0xef9a9a, transparent: true, opacity: 0.5 });
+  for (let i = -2; i <= 2; i++) {
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.08, 24), cristaeMat);
+    disc.rotation.x = Math.PI/2;
+    disc.position.x = i * 0.55;
+    group.add(disc);
+  }
+  group.position.copy(pos);
+  group.rotation.y = rotY;
+  group.rotation.z = rotZ;
+  if (scale) group.scale.setScalar(scale);
+  group.userData.key = key;
+  cellGroup.add(group);
+  clickables.push(group);
+  return group;
+}
+const mito1 = makeMito(new THREE.Vector3(4.2, 2.5, 1.5), 0.5, 0.3, 'mito1', 1);
+const mito2 = makeMito(new THREE.Vector3(-4.5, -2.2, -1), 2.2, -0.4, 'mito1', 0.8);
+
+// --- 內質網（粗面：核旁扁平囊狀堆疊）---
+const erGroup = new THREE.Group();
+const erMat = new THREE.MeshPhongMaterial({ color: 0x4db6ac, transparent: true, opacity: 0.75, shininess: 25 });
+const erCurve = [[3.2, 1.8, -1.5], [4.2, 2.2, -0.5], [4.8, 1.8, 0.8], [4.5, 0.8, 1.8]];
+for (let i = 0; i < erCurve.length; i++) {
+  const p = erCurve[i];
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.18, 20), erMat);
+  disc.position.set(p[0], p[1], p[2]);
+  disc.rotation.z = 0.5;
+  disc.rotation.y = i * 0.4;
+  erGroup.add(disc);
+  // 表面核糖體（粗面）
+  const riboMat = new THREE.MeshPhongMaterial({ color: 0xa1887f });
+  for (let r = 0; r < 14; r++) {
+    const rr = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), riboMat);
+    const a = (r / 14) * Math.PI * 2;
+    rr.position.set(Math.cos(a) * 1.0, 0.22 + Math.sin(a*3)*0.08, Math.sin(a) * 1.0);
+    disc.add(rr);
+  }
+}
+erGroup.userData.key = 'er';
+cellGroup.add(erGroup);
+clickables.push(erGroup);
+
+// --- 高爾基體（扁平囊堆）---
+const golgiGroup = new THREE.Group();
+const golgiMat = new THREE.MeshPhongMaterial({ color: 0xffb74d, transparent: true, opacity: 0.85, shininess: 30 });
+for (let i = 0; i < 5; i++) {
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(1.6 - i*0.15, 1.6 - i*0.15, 0.14, 28), golgiMat);
+  disc.position.set(3.8, -1.5 + i*0.5, 2.2);
+  disc.rotation.z = 0.15;
+  disc.rotation.x = 0.1;
+  golgiGroup.add(disc);
+  // 囊泡（出芽）
+  if (i === 4) {
+    const v1 = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), golgiMat);
+    v1.position.set(3.4, 0.8, 2.4);
+    golgiGroup.add(v1);
+  }
+}
+golgiGroup.userData.key = 'golgi';
+cellGroup.add(golgiGroup);
+clickables.push(golgiGroup);
+
+// --- 溶酶體 ×3 ---
+const lysMat = new THREE.MeshPhongMaterial({ color: 0xff8a65, shininess: 50 });
+const lysPos = [[-2.8, -3.0, 2.0], [1.5, -3.5, -1.8], [5.2, -2.8, -2.5]];
+lysPos.forEach((p, i) => {
+  const ly = new THREE.Mesh(new THREE.SphereGeometry(0.7, 20, 20), lysMat);
+  ly.position.set(p[0], p[1], p[2]);
+  ly.userData.key = 'lysosome';
+  cellGroup.add(ly);
+  clickables.push(ly);
+});
+
+// --- 游離核糖體（散佈細胞質）---
+const riboGroup = new THREE.Group();
+const riboMat = new THREE.MeshPhongMaterial({ color: 0xa1887f });
+for (let i = 0; i < 60; i++) {
+  const r = CELL_R * Math.cbrt(Math.random()) * 0.88;
+  const theta = Math.random()*Math.PI*2;
+  const phi = Math.acos(2*Math.random()-1);
+  const x = r*Math.sin(phi)*Math.cos(theta);
+  const y = r*Math.sin(phi)*Math.sin(theta);
+  const z = r*Math.cos(phi);
+  // 避開核區
+  if (Math.sqrt((x+1.5)**2 + (y-0.5)**2 + z**2) < 4) continue;
+  const rb = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 8), riboMat);
+  rb.position.set(x, y, z);
+  riboGroup.add(rb);
+}
+riboGroup.userData.key = 'ribosome';
+cellGroup.add(riboGroup);
+clickables.push(riboGroup);
+
+// --- 液泡（細小，動物細胞）---
+const vacuole = new THREE.Mesh(
+  new THREE.SphereGeometry(1.5, 24, 24),
+  new THREE.MeshPhongMaterial({ color: 0x81d4fa, transparent: true, opacity: 0.5, shininess: 40 })
+);
+vacuole.position.set(-5.0, 2.8, -2.2);
+vacuole.userData.key = 'vacuole';
+cellGroup.add(vacuole);
+clickables.push(vacuole);
+
+// --- 中心體（兩枝垂直小筒）---
+const centrioleGroup = new THREE.Group();
+const centMat = new THREE.MeshPhongMaterial({ color: 0xba68c8, shininess: 30 });
+function makeCentTube() {
+  const g = new THREE.Group();
+  const n = 9;
+  for (let i = 0; i < n; i++) {
+    const a = (i/n) * Math.PI * 2;
+    const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.9, 8), centMat);
+    tube.position.set(Math.cos(a)*0.22, 0, Math.sin(a)*0.22);
+    g.add(tube);
+  }
+  return g;
+}
+const c1 = makeCentTube();
+c1.position.set(-0.5, 0.5, 3.5);
+centrioleGroup.add(c1);
+const c2 = makeCentTube();
+c2.rotation.z = Math.PI/2;
+c2.position.set(-0.5, 0.5, 3.5);
+centrioleGroup.add(c2);
+centrioleGroup.userData.key = 'centriole';
+cellGroup.add(centrioleGroup);
+clickables.push(centrioleGroup);
+
+// ============ 切割 ============
+function updateCut() {
+  const constant = -CELL_R + cutAmount * (CELL_R * 2 + 2);
+  clipPlane.constant = constant;
+  document.getElementById('cutVal').textContent = Math.round(cutAmount*100) + '%';
+  document.getElementById('cutBadge').style.display = cutAmount > 0.01 ? 'block' : 'none';
+}
+document.getElementById('cutSlider').addEventListener('input', e => {
+  cutAmount = parseInt(e.target.value) / 100;
+  updateCut();
+});
+
+// ============ 互動：hover + click ============
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let hovered = null;
+let focused = null;
+
+function getTopObj(obj) {
+  let o = obj;
+  while (o && !o.userData.key) o = o.parent;
+  return o && o.userData.key ? o : null;
+}
+
+renderer.domElement.addEventListener('mousemove', e => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(clickables, true);
+  const top = hits.length ? getTopObj(hits[0].object) : null;
+  if (top !== hovered) {
+    if (hovered) resetHighlight(hovered);
+    hovered = top;
+    if (hovered) highlight(hovered, true);
+  }
+  renderer.domElement.style.cursor = top ? 'pointer' : 'grab';
+});
+
+renderer.domElement.addEventListener('click', e => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(clickables, true);
+  if (hits.length) {
+    const top = getTopObj(hits[0].object);
+    if (top) select(top);
+  }
+});
+
+function highlight(obj, on) {
+  obj.traverse(ch => {
+    if (ch.isMesh && ch.material) {
+      if (Array.isArray(ch.material)) ch.material.forEach(m => { if (m.emissive) m.emissive.setHex(on ? 0x224466 : 0x000000); });
+      else if (ch.material.emissive) ch.material.emissive.setHex(on ? 0x224466 : 0x000000);
+    }
+  });
+}
+function resetHighlight(obj) { if (obj) highlight(obj, false); }
+
+function select(obj) {
+  const key = obj.userData.key;
+  const info = INFO[key];
+  if (!info) return;
+  // 側欄高亮
+  document.querySelectorAll('#sidebar .row').forEach(r => r.classList.toggle('active', r.dataset.key === key));
+  // 資訊面板
+  document.getElementById('infoPanel').style.display = 'block';
+  document.getElementById('pName').textContent = info.name;
+  document.getElementById('pType').textContent = info.en.toUpperCase();
+  document.getElementById('pDesc').textContent = info.desc;
+  document.getElementById('pFact').textContent = info.fact;
+  document.getElementById('pSize').textContent = info.size;
+  document.getElementById('pCount').textContent = info.count;
+  document.getElementById('pLoc').textContent = info.loc;
+  // 聚焦
+  focused = obj;
+}
+
+// 側欄點擊
+document.querySelectorAll('#sidebar .row').forEach(row => {
+  row.addEventListener('click', () => {
+    const key = row.dataset.key;
+    let target = null;
+    if (key === 'membrane') target = membrane;
+    else if (key === 'nucleus') target = nucleus;
+    else if (key === 'nucleolus') target = nucleolus;
+    else if (key === 'mito1') target = mito1;
+    else if (key === 'er') target = erGroup;
+    else if (key === 'golgi') target = golgiGroup;
+    else if (key === 'ribosome') target = riboGroup;
+    else if (key === 'vacuole') target = vacuole;
+    else if (key === 'centriole') target = centrioleGroup;
+    else if (key === 'lysosome') target = clickables.find(c => c.userData.key === 'lysosome');
+    if (target) select(target);
+  });
+});
+
+// 自動旋轉
+let autoSpin = true;
+document.getElementById('autoSpin').addEventListener('click', function(){
+  autoSpin = !autoSpin;
+  this.classList.toggle('active', autoSpin);
+  this.textContent = autoSpin ? '⟳ 自動旋轉' : '⏸ 停止';
+});
+
+// ============ 動畫 ============
+let time = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.016;
+  if (autoSpin && !focused) cellGroup.rotation.y += 0.003;
+  // 細胞器微浮動
+  mito1.position.y = 2.5 + Math.sin(time*0.8)*0.2;
+  mito2.position.y = -2.2 + Math.cos(time*0.7)*0.2;
+  vacuole.position.y = 2.8 + Math.sin(time*0.6+1)*0.15;
+  if (hovered) {
+    hovered.scale.setScalar(1.05 + Math.sin(time*5)*0.02);
+  } else {
+    // 回復正常 scale（只處理 hovered 過嘅）
+  }
+  // 聚焦時 keep target
+  if (focused) {
+    const pos = focused.position.clone();
+    if (pos.length() > 0.1) controls.target.lerp(pos, 0.06);
+  }
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
